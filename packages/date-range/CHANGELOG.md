@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.0.1](https://github.com/jg-wright/targetd/compare/@targetd/date-range-v8.0.0...@targetd/date-range-v8.0.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* **deps:** upgrade latest deps ([6af085a](https://github.com/jg-wright/targetd/commit/6af085ab8f4e24dc09d5dd038603d159e4f3b4ba))
+
 ## [8.0.0](https://github.com/johngeorgewright/targetd/compare/@targetd/date-range-v7.0.0...@targetd/date-range-v8.0.0) (2026-04-23)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.1](https://github.com/jg-wright/targetd/compare/@targetd/explode-v6.0.0...@targetd/explode-v6.0.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* **deps:** upgrade latest deps ([6af085a](https://github.com/jg-wright/targetd/commit/6af085ab8f4e24dc09d5dd038603d159e4f3b4ba))
+
 ## [6.0.0](https://github.com/johngeorgewright/targetd/compare/@targetd/explode-v5.0.0...@targetd/explode-v6.0.0) (2026-04-23)
 
 
