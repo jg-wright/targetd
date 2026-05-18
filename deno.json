@@ -13,7 +13,7 @@
       "env": true,
       "read": true,
       "run": ["git"],
-      "sys": ["homedir"]
+      "sys": ["homedir", "uid"]
     },
     "hook": {
       "read": ["./.git"],
@@ -39,8 +39,8 @@
     "./packages/*"
   ],
   "imports": {
-    "@commitlint/cli": "npm:@commitlint/cli@^20.5.0",
-    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^20.5.0",
-    "lint-staged": "npm:lint-staged@^16.4.0"
+    "@commitlint/cli": "npm:@commitlint/cli@^21.0.1",
+    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.0.1",
+    "lint-staged": "npm:lint-staged@^17.0.5"
   }
 }

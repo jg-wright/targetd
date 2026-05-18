@@ -1,4 +1,4 @@
-import { safeParse, union, type ZodMiniUnion } from 'zod/mini'
+import { safeParse, union } from 'zod/mini'
 import {
   $constructor,
   type $ZodCustomDef,
@@ -6,6 +6,7 @@ import {
   type $ZodRawIssue,
   $ZodType,
   type $ZodType as $ZodTypeType,
+  type $ZodUnion,
   NEVER,
 } from 'zod/v4/core'
 
@@ -21,7 +22,7 @@ export type $ZodSwitchMap = [condition: $ZodTypeType, parser: $ZodTypeType][]
  */
 export interface ZodSwitchDef extends $ZodCustomDef {
   switchMap: $ZodSwitchMap
-  union: ZodMiniUnion
+  union: $ZodUnion
 }
 
 /**
@@ -116,6 +117,6 @@ export function zodSwitch<SwitchMap extends $ZodSwitchMap>(
     fn: () => true,
     abort: true,
     switchMap,
-    union: union(switchMap.map(([, type]) => type)) as ZodMiniUnion,
+    union: union(switchMap.map(([, type]) => type)) as $ZodUnion,
   }) as ZodSwitch<SwitchMap>
 }

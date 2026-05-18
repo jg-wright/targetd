@@ -7,7 +7,7 @@
     "@targetd/api": "jsr:@targetd/api@^10.0.0",
     "flat": "npm:flat@^6.0.1",
     "ts-toolbelt": "npm:ts-toolbelt@^9.6.0",
-    "zod": "npm:zod@^4.3.6"
+    "zod": "npm:zod@~4.4.3"
   },
   "lint": {
     "rules": {

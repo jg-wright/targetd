@@ -4,12 +4,12 @@
   "version": "9.0.0",
   "exports": "./src/index.ts",
   "imports": {
-    "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.45.1",
+    "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.46.1",
     "@johngw/fs": "npm:@johngw/fs@^3.0.1",
     "@targetd/api": "jsr:@targetd/api@^10.0.0",
     "ts-toolbelt": "npm:ts-toolbelt@^9.6.0",
-    "yaml": "npm:yaml@^2.8.2",
-    "zod": "npm:zod@^4.3.6"
+    "yaml": "npm:yaml@^2.9.0",
+    "zod": "npm:zod@~4.4.3"
   },
   "lint": {
     "rules": {
