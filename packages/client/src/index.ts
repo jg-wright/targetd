@@ -1,4 +1,10 @@
-import type { Data, DataSchema, PT, QT, QueryableData } from '@targetd/api'
+import {
+  Data,
+  type DataSchema,
+  type PT,
+  type QT,
+  type QueryableData,
+} from '@targetd/api'
 import { queryToURLSearchParams } from './queryToURLSearchParams.ts'
 import { ZodError } from 'zod'
 import { ResponseError } from './ResponseError.ts'
@@ -10,9 +16,9 @@ import { ResponseError } from './ResponseError.ts'
  * @example
  * ```ts
  * import { Client } from '@targetd/client'
- * import { data } from './data.ts' // Your Data instance definition
+ * import { schema } from './schema.ts' // Your DataSchema definition
  *
- * const client = new Client('http://localhost:3000', data)
+ * const client = await Client.create('http://localhost:3000', schema)
  *
  * const greeting = await client.getPayload('greeting', { country: 'US' })
  * const allPayloads = await client.getPayloadForEachName({ country: 'US' })
@@ -20,25 +26,36 @@ import { ResponseError } from './ResponseError.ts'
  */
 export class Client<$ extends DataSchema = DataSchema>
   implements QueryableData<$> {
-  #baseURL: string
+  readonly #baseURL: string
 
-  #data: Data<$>
+  readonly #data: Data<$>
 
-  #init?: RequestInit
+  readonly #init?: RequestInit
 
   /**
-   * Create a new Client instance.
+   * Create a new Client instance from a {@link DataSchema}.
    *
    * @param baseURL - The base URL of the @targetd/server instance.
-   * @param data - Data instance for type definitions (rules are removed, only used for types).
+   * @param schema - DataSchema used to validate queries and parse responses.
    * @param init - Optional fetch RequestInit options to apply to all requests.
    *
    * @example
    * ```ts
-   * const client = new Client('http://localhost:3000', data, {
-   *   headers: { 'Authorization': 'Bearer token' }
+   * const client = await Client.create('http://localhost:3000', schema, {
+   *   headers: { 'Authorization': 'Bearer token' },
    * })
    * ```
+   */
+  static async create<$ extends DataSchema>(
+    baseURL: string,
+    schema: $,
+    init?: RequestInit,
+  ): Promise<Client<$>> {
+    return new Client<$>(baseURL, await Data.create(schema), init)
+  }
+
+  /**
+   * @see {@link Client.create}
    */
   constructor(
     baseURL: string,
@@ -46,7 +63,7 @@ export class Client<$ extends DataSchema = DataSchema>
     init?: RequestInit,
   ) {
     this.#baseURL = baseURL
-    this.#data = data.removeAllRules()
+    this.#data = data
     this.#init = init
   }
 

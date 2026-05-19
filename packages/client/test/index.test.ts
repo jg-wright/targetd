@@ -9,25 +9,24 @@ import z from 'zod'
 import { Client } from '@targetd/client'
 import { promisify } from 'node:util'
 
-const data = await Data.create(
-  DataSchema.create()
-    .usePayload({
-      foo: z.string(),
-      bar: z.number(),
-      timed: z.string(),
-    })
-    .useTargeting({
-      weather: targetIncludes(z.string()),
-      highTide: targetEquals(z.boolean()),
-      asyncThing: {
-        predicate: (q) =>
-          setTimeout(10, (t) => q === t && setTimeout(10, true)),
-        queryParser: z.boolean(),
-        targetingParser: z.boolean(),
-      },
-      date: dateRangeTargeting,
-    }),
-)
+const schema = DataSchema.create()
+  .usePayload({
+    foo: z.string(),
+    bar: z.number(),
+    timed: z.string(),
+  })
+  .useTargeting({
+    weather: targetIncludes(z.string()),
+    highTide: targetEquals(z.boolean()),
+    asyncThing: {
+      predicate: (q) => setTimeout(10, (t) => q === t && setTimeout(10, true)),
+      queryParser: z.boolean(),
+      targetingParser: z.boolean(),
+    },
+    date: dateRangeTargeting,
+  })
+
+const data = await Data.create(schema)
   .addRules('foo', [
     {
       targeting: {
@@ -141,14 +140,17 @@ Deno.test('get all matching payloads', async (t) => {
 })
 
 async function startService(): Promise<
-  AsyncDisposable & { client: Client<typeof data['schema']> }
+  AsyncDisposable & { client: Client<typeof schema> }
 > {
   const app = createServer(data)
   const { promise, reject, resolve } = Promise.withResolvers<void>()
   const server = app.listen(0, (error) => error ? reject(error) : resolve())
   await promise
   const address = server.address() as AddressInfo
-  const client = new Client(`http://localhost:${address.port}`, data)
+  const client = await Client.create(
+    `http://localhost:${address.port}`,
+    schema,
+  )
   return {
     client,
     [Symbol.asyncDispose]: promisify(server.close.bind(server)),
