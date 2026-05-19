@@ -66,7 +66,7 @@ Type-safe HTTP client for querying `@targetd/server` instances.
 ```typescript
 import { Client } from '@targetd/client'
 
-const client = new Client('http://localhost:3000', data)
+const client = await Client.create('http://localhost:3000', schema)
 const greeting = await client.getPayload('greeting', { country: 'US' })
 ```
 
