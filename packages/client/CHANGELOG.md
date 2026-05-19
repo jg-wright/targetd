@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.1.0](https://github.com/jg-wright/targetd/compare/@targetd/client-v9.0.1...@targetd/client-v9.1.0) (2026-05-19)
+
+
+### Features
+
+* **client:** expose a static factory that only requires a schema ([675b426](https://github.com/jg-wright/targetd/commit/675b426a26e6f4be6e092292ecf3f1036b2e22d9))
+
 ## [9.0.1](https://github.com/jg-wright/targetd/compare/@targetd/client-v9.0.0...@targetd/client-v9.0.1) (2026-05-18)
 
 
