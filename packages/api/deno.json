@@ -1,7 +1,7 @@
 {
   "name": "@targetd/api",
   "description": "Type-safe targeting and feature flag system with dynamic content delivery based on query conditions. Perfect for A/B testing, feature flags, and content personalization.",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "exports": "./src/index.ts",
   "fmt": {
     "semiColons": false,

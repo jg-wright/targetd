@@ -1,7 +1,7 @@
 {
   "name": "@targetd/explode",
   "description": "Transform flat key notation to nested objects with full TypeScript type inference.",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "exports": "./src/index.ts",
   "imports": {
     "@targetd/api": "jsr:@targetd/api@^10.0.0",
