@@ -5,7 +5,7 @@
   "exports": "./src/index.ts",
   "imports": {
     "@johngw/error": "npm:@johngw/error@^2.2.2",
-    "@targetd/api": "jsr:@targetd/api@^10.0.0",
+    "@targetd/api": "jsr:@targetd/api@^10.0.1",
     "@types/express": "npm:@types/express@^5.0.6",
     "@types/qs": "npm:@types/qs@^6.15.1",
     "cors": "npm:cors@^2.8.6",
