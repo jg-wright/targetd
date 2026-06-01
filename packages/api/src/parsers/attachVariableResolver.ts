@@ -15,7 +15,19 @@ import {
   type VariableStringParser,
   variableStringParser,
 } from './DataItemVariableResolver.ts'
-import type { $ZodArray, $ZodObject, $ZodRecord, $ZodType } from 'zod/v4/core'
+import type {
+  $ZodArray,
+  $ZodCatch,
+  $ZodDefault,
+  $ZodNonOptional,
+  $ZodNullable,
+  $ZodObject,
+  $ZodOptional,
+  $ZodPrefault,
+  $ZodReadonly,
+  $ZodRecord,
+  $ZodType,
+} from 'zod/v4/core'
 import { any, type ZodObject } from 'zod'
 import { type ZodSwitch, zodSwitch } from './switch.ts'
 import type { VariablesRegistry } from './variablesRegistry.ts'
@@ -43,6 +55,18 @@ export function attachVariableResolver<
       return arrayVariableResolverParser(
         variablesRegistry,
         parser as unknown as $ZodArray,
+      ) as RecursiveVariableResolver<Parser>
+
+    case 'optional':
+    case 'nullable':
+    case 'default':
+    case 'prefault':
+    case 'catch':
+    case 'nonoptional':
+    case 'readonly':
+      return wrapperVariableResolverParser(
+        variablesRegistry,
+        parser as unknown as WrapperParser,
       ) as RecursiveVariableResolver<Parser>
 
     default:
@@ -95,6 +119,28 @@ function arrayVariableResolverParser<Parser extends $ZodArray>(
     variablesRegistry,
     $arrayParser,
   ) as RecursiveVariableResolver<Parser>
+}
+
+type WrapperParser =
+  | $ZodOptional
+  | $ZodNullable
+  | $ZodDefault
+  | $ZodPrefault
+  | $ZodCatch
+  | $ZodNonOptional
+  | $ZodReadonly
+
+function wrapperVariableResolverParser<Parser extends WrapperParser>(
+  variablesRegistry: VariablesRegistry,
+  wrapperParser: Parser,
+): RecursiveVariableResolver<Parser> {
+  return new wrapperParser._zod.constr({
+    ...wrapperParser._zod.def,
+    innerType: attachVariableResolver(
+      variablesRegistry,
+      wrapperParser._zod.def.innerType,
+    ),
+  }) as unknown as RecursiveVariableResolver<Parser>
 }
 
 function recordVariableResolverParser<Parser extends $ZodRecord>(
@@ -155,11 +201,29 @@ type WithVariableResolver<
 
 export type RecursiveVariableResolver<
   Parser extends $ZodType,
-> = Parser extends $ZodArray ? WithVariableResolver<
-    $ZodArray<
-      RecursiveVariableResolver<Parser['_zod']['def']['element']>
+> = Parser extends $ZodOptional
+  ? $ZodOptional<RecursiveVariableResolver<Parser['_zod']['def']['innerType']>>
+  : Parser extends $ZodNullable ? $ZodNullable<
+      RecursiveVariableResolver<Parser['_zod']['def']['innerType']>
     >
-  >
+  : Parser extends $ZodDefault
+    ? $ZodDefault<RecursiveVariableResolver<Parser['_zod']['def']['innerType']>>
+  : Parser extends $ZodPrefault ? $ZodPrefault<
+      RecursiveVariableResolver<Parser['_zod']['def']['innerType']>
+    >
+  : Parser extends $ZodCatch
+    ? $ZodCatch<RecursiveVariableResolver<Parser['_zod']['def']['innerType']>>
+  : Parser extends $ZodNonOptional ? $ZodNonOptional<
+      RecursiveVariableResolver<Parser['_zod']['def']['innerType']>
+    >
+  : Parser extends $ZodReadonly ? $ZodReadonly<
+      RecursiveVariableResolver<Parser['_zod']['def']['innerType']>
+    >
+  : Parser extends $ZodArray ? WithVariableResolver<
+      $ZodArray<
+        RecursiveVariableResolver<Parser['_zod']['def']['element']>
+      >
+    >
   : Parser extends $ZodRecord ? WithVariableResolver<
       $ZodRecord<
         Parser['_zod']['def']['keyType'],

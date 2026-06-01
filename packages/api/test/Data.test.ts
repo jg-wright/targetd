@@ -737,6 +737,33 @@ Deno.test('variables in arrays', async (t) => {
   )
 })
 
+Deno.test('optional payload properties stay optional', async () => {
+  const data = Data.create(
+    DataSchema.create().usePayload({
+      foo: z.object({
+        a: z.string().optional(),
+        b: z.string(),
+      }),
+    }),
+  )
+
+  // Omitting the optional property must not error
+  const withoutOptional = await (await data).addRules('foo', {
+    rules: [{ payload: { b: 'plain' } }],
+  })
+  assertEquals(await withoutOptional.getPayload('foo'), { b: 'plain' })
+
+  // Variables still resolve inside the optional property when present
+  const withOptional = await (await data).addRules('foo', {
+    variables: { v: [{ payload: 'resolved' }] },
+    rules: [{ payload: { a: '{{v}}', b: 'plain' } }],
+  })
+  assertEquals(await withOptional.getPayload('foo'), {
+    a: 'resolved',
+    b: 'plain',
+  })
+})
+
 Deno.test('errors when using variables with incorrect types', async (t) => {
   const data = await Data.create(
     DataSchema.create()
