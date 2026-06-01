@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.0.2](https://github.com/jg-wright/targetd/compare/@targetd/api-v10.0.1...@targetd/api-v10.0.2) (2026-06-01)
+
+
+### Bug Fixes
+
+* **api:** preserve optional payload properties through variable resolver ([e595f71](https://github.com/jg-wright/targetd/commit/e595f71ffd1f6372ae6284b9b17fe54243527c57))
+
 ## [10.0.1](https://github.com/jg-wright/targetd/compare/@targetd/api-v10.0.0...@targetd/api-v10.0.1) (2026-05-18)
 
 
