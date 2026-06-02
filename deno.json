@@ -39,8 +39,9 @@
     "./packages/*"
   ],
   "imports": {
-    "@commitlint/cli": "npm:@commitlint/cli@^21.0.1",
-    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.0.1",
-    "lint-staged": "npm:lint-staged@^17.0.5"
+    "@commitlint/cli": "npm:@commitlint/cli@^21.0.2",
+    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.0.2",
+    "@commitlint/types": "npm:@commitlint/types@^21.0.1",
+    "lint-staged": "npm:lint-staged@^17.0.7"
   }
 }
