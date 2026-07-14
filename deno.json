@@ -22,7 +22,7 @@
     },
     "test": {
       "env": true,
-      "net": ["0.0.0.0", "127.0.0.1", "localhost"],
+      "net": ["0.0.0.0", "[::]:0", "127.0.0.1", "localhost"],
       "read": true,
       "sys": ["hostname"],
       "write": true
