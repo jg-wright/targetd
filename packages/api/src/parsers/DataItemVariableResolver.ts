@@ -21,14 +21,25 @@ export const variableStringParser = () =>
 
 export type VariableStringParser = ZodMiniTemplateLiteral<`{{${string}}}`>
 
+/**
+ * A late-bound reference to the parser representing a payload position.
+ * Wrapper parsers (optional, nullable, ...) recurse into their inner type
+ * before the transformed wrapper exists, so the position's parser is filled
+ * in after construction and read at parse time.
+ */
+export interface ParserPosition {
+  parser: $ZodType
+}
+
 export function DataItemVariableResolverParser(
   registry: VariablesRegistry,
   parser: $ZodType,
+  position?: ParserPosition,
 ): DataItemVariableResolverParser {
   return pipe(
     variableStringParser(),
     transform((input, ctx) =>
-      stringToVariableResolver(registry, parser, input, ctx)
+      stringToVariableResolver(registry, parser, input, ctx, position)
     ),
   )
 }
@@ -38,9 +49,10 @@ export function DataItemVariableResolverTransformer<T extends string>(
   parser: $ZodType,
   input: T,
   ctx: ParsePayload,
+  position?: ParserPosition,
 ): T extends VariableString ? VariableResolver : T {
   return isVariableString(input)
-    ? stringToVariableResolver(registry, parser, input, ctx) as any
+    ? stringToVariableResolver(registry, parser, input, ctx, position) as any
     : input as any
 }
 
@@ -132,6 +144,7 @@ function stringToVariableResolver(
   parser: $ZodType,
   input: VariableString,
   ctx: ParsePayload,
+  position?: ParserPosition,
 ): VariableResolver {
   const key = extractVariableName(input)
   const resolver: VariableResolver = (
@@ -150,7 +163,9 @@ function stringToVariableResolver(
   resolver.$$resolver$$ = true
   registry.set(key, {
     ctx,
-    parser,
+    // Validate variable values against the full parser of this position
+    // (e.g. the nullable wrapper), not the unwrapped leaf.
+    parser: position?.parser ?? parser,
   })
   return resolver
 }

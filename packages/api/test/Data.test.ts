@@ -841,6 +841,70 @@ Deno.test('variables resolving to null are substituted', async () => {
   assertEquals(await data.getPayload('foo'), { a: null })
 })
 
+Deno.test('variables in wrapped positions validate against the wrapper', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.strictObject({ a: z.string().nullable() }) }),
+  )
+    .addRules('foo', {
+      variables: { v: [{ payload: null }] },
+      rules: [{ payload: { a: '{{v}}' } }],
+    })
+
+  assertEquals(await data.getPayload('foo'), { a: null })
+})
+
+Deno.test('variables inside union options resolve', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({
+        foo: z.union([z.strictObject({ n: z.number() }), z.boolean()]),
+        bar: z.union([z.strictObject({ s: z.string() }), z.number()]),
+      }),
+  )
+    .addRules('foo', {
+      variables: { v: [{ payload: 42 }] },
+      rules: [{ payload: { n: '{{v}}' } }],
+    })
+    .addRules('bar', {
+      variables: { w: [{ payload: 'resolved' }] },
+      rules: [{ payload: { s: '{{w}}' } }],
+    })
+
+  assertEquals(await data.getPayload('foo'), { n: 42 })
+  // String positions inside unions previously kept the literal placeholder
+  assertEquals(await data.getPayload('bar'), { s: 'resolved' })
+})
+
+Deno.test('variables inside tuples resolve', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.tuple([z.string(), z.number()]) }),
+  )
+    .addRules('foo', {
+      variables: {
+        s: [{ payload: 'str' }],
+        n: [{ payload: 7 }],
+      },
+      rules: [{ payload: ['{{s}}', '{{n}}'] }],
+    })
+
+  assertEquals(await data.getPayload('foo'), ['str', 7])
+})
+
+Deno.test('variables inside lazy schemas resolve', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.lazy(() => z.strictObject({ n: z.number() })) }),
+  )
+    .addRules('foo', {
+      variables: { v: [{ payload: 42 }] },
+      rules: [{ payload: { n: '{{v}}' } }],
+    })
+
+  assertEquals(await data.getPayload('foo'), { n: 42 })
+})
+
 Deno.test('getPayloads with variables using fallthrough targeting', async () => {
   const data = await Data.create(
     DataSchema.create()
