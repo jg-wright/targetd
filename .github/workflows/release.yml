@@ -28,8 +28,17 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
 
-  release-jsr:
+  release-test:
     needs: [release-github]
+    if: needs.release-github.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: ./.github/workflows/test.yml
+
+  release-jsr:
+    needs: [release-github, release-test]
     if: needs.release-github.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
     strategy:
