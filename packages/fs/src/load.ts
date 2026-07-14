@@ -52,6 +52,8 @@ export async function load<$ extends DataSchema>(
   data: Data<$>,
   dir: string,
 ): Promise<Data<$>> {
+  const files: WithFileNamesResult<string>[] = []
+
   for await (
     const contents of fs.readFiles(dir, {
       encoding: 'utf8',
@@ -59,7 +61,19 @@ export async function load<$ extends DataSchema>(
       withFileNames: true,
     })
   ) {
-    data = await addRules(data, await parseFileContents(contents))
+    files.push(contents)
+  }
+
+  // Rules are first-match-wins, so cross-file precedence must not depend on
+  // platform-specific directory enumeration order.
+  files.sort((a, b) => a.fileName.localeCompare(b.fileName))
+
+  for (const contents of files) {
+    data = await addRules(
+      data,
+      await parseFileContents(contents),
+      contents.fileName,
+    )
   }
 
   return data
@@ -108,10 +122,18 @@ async function parseFileContents({
 async function addRules<$ extends DataSchema>(
   data: Data<$>,
   fileData: FileData,
+  fileName: string,
 ): Promise<Data<$>> {
   let result = data
 
   for (const [key, value] of Object.entries(fileData)) {
+    // Scalar values (e.g. a top-level "$schema" annotation) are ignored, but
+    // null is always a mistake — typically an empty YAML stub like "foo:".
+    if (value === null) {
+      throw new Error(
+        `Cannot add rules for "${key}" in ${fileName}: value is null`,
+      )
+    }
     if (typeof value === 'object') {
       result = await result.addRules(key, value)
     }

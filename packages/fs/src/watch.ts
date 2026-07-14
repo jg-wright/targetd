@@ -104,6 +104,7 @@ export function watch<$ extends DataSchema>(
     : {}
   const onLoad = (onLoadParam || optionsOrOnLoad) as OnLoad<$>
   const mutex = new Mutex()
+  let stopped = false
 
   const onChange = async () => {
     await mutex.acquire()
@@ -114,25 +115,39 @@ export function watch<$ extends DataSchema>(
       error = $error
     } finally {
       mutex.release()
-      onLoad(error, data)
+      if (!stopped) await onLoad(error, data)
     }
   }
 
-  const watcher = fsWatch(
-    dir,
-    fsOptions,
-    debounce(
-      async (_eventType, filename) => {
-        if (filename && !pathIsLoadable(filename)) return
-        await onChange()
-      },
-      debounceMS,
-    ),
+  const debouncedOnChange = debounce(
+    (_eventType: unknown, filename: string | Buffer | null) => {
+      if (filename && !pathIsLoadable(String(filename))) return
+      onChange().catch(reportUnhandled)
+    },
+    debounceMS,
   )
 
-  const stop: WatchDisposer = () => watcher.close()
+  // Watch recursively to match `load`, which reads subdirectories.
+  const watcher = fsWatch(
+    dir,
+    { recursive: true, ...fsOptions },
+    debouncedOnChange,
+  )
 
-  onChange()
+  // Without an error listener, a watcher error (directory removed, EMFILE,
+  // EPERM) is an uncaught exception that crashes the host process.
+  watcher.on('error', (error) => {
+    if (stopped) return
+    Promise.resolve(onLoad(error, data)).catch(reportUnhandled)
+  })
+
+  const stop: WatchDisposer = () => {
+    stopped = true
+    debouncedOnChange.cancel()
+    watcher.close()
+  }
+
+  onChange().catch(reportUnhandled)
 
   return stop
 }
@@ -143,4 +158,11 @@ export function watch<$ extends DataSchema>(
  */
 export interface WatchDisposer {
   (): void
+}
+
+// Last-resort reporter for rejections with nowhere else to go (an onLoad
+// callback that itself throws). Never rethrown: a watcher must not be able
+// to crash the host process.
+function reportUnhandled(error: unknown) {
+  console.error('[@targetd/fs] watch error:', error)
 }
