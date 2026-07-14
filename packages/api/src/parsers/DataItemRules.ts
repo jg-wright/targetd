@@ -90,7 +90,7 @@ export function DataItemRulesParser<
       >[] => {
         const singularTargetedRules = spreadMultiTargetsToSeparateRules(rules)
 
-        let transformedRules: DataItemRule<$, PayloadParser, false>[] = []
+        const transformedRules: DataItemRule<$, PayloadParser, false>[] = []
 
         for (const rule of singularTargetedRules) {
           const prevRule = arrayLast(transformedRules)
@@ -123,10 +123,7 @@ export function DataItemRulesParser<
 
             adaptedPrevRule.fallThrough.push(...adaptedRule.fallThrough)
 
-            transformedRules = [
-              ...transformedRules.slice(0, -1),
-              adaptedPrevRule,
-            ]
+            transformedRules[transformedRules.length - 1] = adaptedPrevRule
           } else {
             transformedRules.push(
               adaptRule(targetingParsers, fallThroughTargetingParsers, rule),

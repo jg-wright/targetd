@@ -357,10 +357,12 @@ export default class Data<$ extends DataSchema = DataSchema>
     rawQuery: QT.Raw<$['queryParsers']> = {},
   ): Promise<PT.Payloads<$>> {
     const payloads = {} as PT.Payloads<$>
+    // One parsed query and predicate set shared across every payload name
+    const predicate = await this.#createRulePredicate(rawQuery)
 
     await Promise.all(
       objectKeys(this.#dataOut).map(async (name) => {
-        payloads[name] = await this.getPayload(name, rawQuery)
+        payloads[name] = await this.#getPayloadWithPredicate(name, predicate)
       }),
     )
 
@@ -398,7 +400,21 @@ export default class Data<$ extends DataSchema = DataSchema>
     | PT.Payload<$, $['payloadParsers'][Name]>
     | undefined
   > {
-    const predicate = await this.#createRulePredicate(rawQuery)
+    return this.#getPayloadWithPredicate(
+      name,
+      await this.#createRulePredicate(rawQuery),
+    )
+  }
+
+  async #getPayloadWithPredicate<Name extends keyof $['payloadParsers']>(
+    name: Name,
+    predicate: (
+      rule: DataItemRule<$, $['payloadParsers'][Name]>,
+    ) => Promise<boolean>,
+  ): Promise<
+    | PT.Payload<$, $['payloadParsers'][Name]>
+    | undefined
+  > {
     const targetableItem = this.#getTargetableItem(name)
     let payload:
       | PT.Payload<$, $['payloadParsers'][Name]>
@@ -529,6 +545,32 @@ export default class Data<$ extends DataSchema = DataSchema>
   ) {
     const query = await this.#QueryParser.parseAsync(rawQuery)
 
+    // Built once per query and shared across every rule evaluation. Each
+    // targeting predicate is created lazily on first use — descriptors'
+    // predicate factories must not run for targeting keys no rule uses —
+    // then memoized for the rest of the query.
+    const predicates = objectMap(
+      this.#schema.targetingPredicates as Record<string, {
+        predicate: (...args: any[]) => any
+        requiresQuery: boolean
+      }>,
+      (target, targetingKey) => {
+        let predicate:
+          | MaybePromise<(targeting: any) => MaybePromise<boolean>>
+          | undefined
+        return {
+          predicate: () =>
+            predicate ??= target.predicate(
+              // We haven't yet made sure that the QueryParsers
+              // and TargetingParsers have the same keys.
+              (query as any)[targetingKey],
+              query as any,
+            ),
+          requiresQuery: target.requiresQuery,
+        }
+      },
+    )
+
     return (
       rule: DataItemRule<$, $['payloadParsers'][Name]>,
     ) =>
@@ -537,22 +579,7 @@ export default class Data<$ extends DataSchema = DataSchema>
         this.#targetingPredicate(
           query as any,
           rule.targeting! as any,
-          objectMap(
-            this.#schema.targetingPredicates as Record<string, {
-              predicate: (...args: any[]) => any
-              requiresQuery: boolean
-            }>,
-            (target, targetingKey) => ({
-              predicate: () =>
-                target.predicate(
-                  // We haven't yet made sure that the QueryParsers
-                  // and TargetingParsers have the same keys.
-                  (query as any)[targetingKey],
-                  query as any,
-                ),
-              requiresQuery: target.requiresQuery,
-            }),
-          ),
+          predicates,
         )
       ) as Promise<boolean>
   }

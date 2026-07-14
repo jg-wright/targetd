@@ -5,10 +5,11 @@ export function objectMap<O extends Record<string, unknown>, R>(
   obj: O,
   fn: <K extends keyof O>(v: O[K], k: K) => R,
 ): Record<keyof O, R> {
-  return objectEntries(obj).reduce(
-    (result, [key, value]) => ({ ...result, [key]: fn(value, key) }),
-    {} as Record<keyof O, R>,
-  )
+  const result = {} as Record<keyof O, R>
+  for (const [key, value] of objectIterator(obj)) {
+    result[key] = fn(value, key)
+  }
+  return result
 }
 
 export function objectKeys<O extends Record<string, unknown>>(
@@ -93,11 +94,10 @@ export function intersectionKeys<T extends Record<string, unknown>>(
   return keys
 }
 
-class EveryAsyncFail extends Error {}
-
 /**
  * Call an asynchronous function on all key/value pairs.
- * Returns true only if all calls return true.
+ * Returns true only if all calls return true, short-circuiting on the first
+ * false result.
  *
  * @example
  * if (await objectEveryAsync({ foo: 'bar' }, (value) => Promise.resolve(value === 'bar'))) {
@@ -108,15 +108,8 @@ export async function objectEveryAsync<T extends Record<string, unknown>>(
   obj: T,
   fn: <K extends keyof T>(value: T[K], key: K) => MaybePromise<boolean>,
 ) {
-  try {
-    await Promise.all(
-      objectEntries(obj).map(async ([key, value]) => {
-        if (!(await Promise.resolve(fn(value, key)))) throw new EveryAsyncFail()
-      }),
-    )
-  } catch (error) {
-    if (error instanceof EveryAsyncFail) return false
-    else throw error
+  for (const [key, value] of objectIterator(obj)) {
+    if (!(await fn(value, key))) return false
   }
   return true
 }
