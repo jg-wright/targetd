@@ -2,6 +2,7 @@ import {
   assertEquals,
   assertRejects,
   assertStrictEquals,
+  assertThrows,
 } from 'jsr:@std/assert'
 import { assertSnapshot } from 'jsr:@std/testing/snapshot'
 import { setTimeout } from 'node:timers/promises'
@@ -222,6 +223,39 @@ Deno.test('insert rejects unknown payload names and targeting keys', async () =>
       foo: { __rules__: [{ payload: 'x', targeting: { nonsense: 'y' } }] },
     } as any)
   )
+})
+
+Deno.test('payloads containing a __rules__ key are not envelopes', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.record(z.string(), z.any()) })
+      .useFallThroughTargeting({ browser: targetIncludes(z.string()) }),
+  )
+    .insert({ foo: { __rules__: 'just data' } } as any)
+
+  // __rules__ is not an array of rule-shaped values, so the value is a
+  // genuine payload — previously it was mangled into fall-through rules
+  assertEquals(await data.getPayload('foo'), { __rules__: 'just data' })
+})
+
+Deno.test('rule data is deeply immutable', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.strictObject({ a: z.string() }) })
+      .useTargeting({ weather: targetIncludes(z.string()) }),
+  )
+    .addRules('foo', [
+      { targeting: { weather: ['sunny'] }, payload: { a: 'x' } },
+    ])
+
+  const rules = data.data.foo!.rules as any[]
+  assertThrows(() => rules.push('smuggled'), TypeError)
+  assertThrows(() => {
+    rules[0].payload.a = 'mutated'
+  }, TypeError)
+  assertThrows(() => {
+    rules[0].targeting.weather.push('rainy')
+  }, TypeError)
 })
 
 Deno.test('removeAllRules', async () => {

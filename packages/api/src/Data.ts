@@ -110,7 +110,7 @@ export default class Data<$ extends DataSchema = DataSchema>
     dataIn: DataItemsIn<$>,
   ) {
     this.#schema = schema
-    this.#dataOut = Object.freeze(dataOut)
+    this.#dataOut = deepFreeze(dataOut)
     this.#dataIn = Object.freeze(dataIn)
     this.#QueryParser = partial(
       strictObject(schema.queryParsers),
@@ -128,6 +128,7 @@ export default class Data<$ extends DataSchema = DataSchema>
    * Get all data items including rules and variables.
    *
    * @returns The complete data structure with all rules and variables.
+   *   The structure is deeply frozen — mutating it throws.
    */
   get data(): DataItemsOut<$> {
     return this.#dataOut
@@ -242,12 +243,19 @@ export default class Data<$ extends DataSchema = DataSchema>
     })
   }
 
+  // Duck-typed on the envelope structure: __rules__ must be an array of
+  // rule-shaped values, so a genuine payload merely containing a __rules__
+  // key is not mistaken for an envelope.
   readonly #isFallThroughRulesPayload = <
     Name extends keyof $['payloadParsers'],
   >(
     payload: PT.Payload<$, $['payloadParsers'][Name]>,
   ): payload is FTTT.Rules<$, $['payloadParsers'][Name]> =>
-    typeof payload === 'object' && payload !== null && '__rules__' in payload
+    typeof payload === 'object' && payload !== null &&
+    Array.isArray((payload as Record<string, unknown>).__rules__) &&
+    ((payload as Record<string, unknown>).__rules__ as unknown[]).every(
+      isRuleShaped,
+    )
 
   /**
    * Add targeting rules for a specific payload. Rules are evaluated in order—first match wins.
@@ -561,8 +569,9 @@ export default class Data<$ extends DataSchema = DataSchema>
         return {
           predicate: () =>
             predicate ??= target.predicate(
-              // We haven't yet made sure that the QueryParsers
-              // and TargetingParsers have the same keys.
+              // Query and targeting parsers are registered from the same
+              // descriptor record in DataSchema.useTargeting, so their keys
+              // align by construction.
               (query as any)[targetingKey],
               query as any,
             ),
@@ -654,4 +663,19 @@ export default class Data<$ extends DataSchema = DataSchema>
 
 function hasPayload<Payload>(x: any): x is { payload: Payload } {
   return 'payload' in x
+}
+
+function isRuleShaped(x: unknown): boolean {
+  return typeof x === 'object' && x !== null &&
+    ('payload' in x || 'fallThrough' in x)
+}
+
+function deepFreeze<T>(value: T): T {
+  if (typeof value === 'object' && value !== null && !Object.isFrozen(value)) {
+    Object.freeze(value)
+    for (const key of Object.keys(value)) {
+      deepFreeze((value as Record<string, unknown>)[key])
+    }
+  }
+  return value
 }
