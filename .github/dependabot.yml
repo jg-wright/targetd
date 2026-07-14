@@ -1,10 +1,21 @@
 version: 2
 updates:
   - package-ecosystem: deno
-    directory: /
+    directories:
+      - /
+      - /packages/api
+      - /packages/client
+      - /packages/date-range
+      - /packages/explode
+      - /packages/fs
+      - /packages/json-schema
+      - /packages/server
     schedule:
       interval: weekly
+
   - package-ecosystem: github-actions
-    directory: /
+    directories:
+      - /.github/actions
+      - /.github/workflows
     schedule:
       interval: weekly
