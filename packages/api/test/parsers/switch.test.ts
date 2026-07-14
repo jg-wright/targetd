@@ -6,6 +6,8 @@ import {
   object,
   optional,
   parse,
+  parseAsync,
+  refine,
   safeExtend,
   safeParse,
   strictObject,
@@ -81,4 +83,20 @@ Deno.test('zodSwitch 2', () => {
       range: 4,
     },
   )
+})
+
+Deno.test('zodSwitch with async parsers', async () => {
+  const parser = zodSwitch([
+    [
+      string(),
+      string().check(refine(async (s) => s !== 'nope')),
+    ],
+    [any(), number()],
+  ])
+
+  assertEquals(await parseAsync(parser, 'ok'), 'ok')
+  assertEquals(await parseAsync(parser, 7), 7)
+
+  const error = await parseAsync(parser, 'nope').catch((error) => error)
+  assertIsError(error, $ZodError)
 })

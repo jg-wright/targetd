@@ -1,4 +1,4 @@
-import { safeParse, union } from 'zod/mini'
+import { safeParse, safeParseAsync, union } from 'zod/mini'
 import {
   $constructor,
   type $ZodCustomDef,
@@ -8,6 +8,7 @@ import {
   type $ZodType as $ZodTypeType,
   type $ZodUnion,
   NEVER,
+  type ParsePayload,
 } from 'zod/v4/core'
 
 /**
@@ -51,36 +52,74 @@ export const ZodSwitch: $constructor<ZodSwitch> = $constructor(
   'ZodSwitch',
   (inst, def) => {
     $ZodType.init(inst, def)
-    inst._zod.parse = (payload) => {
-      const input = payload.value
-      let unfoundIssue: undefined | $ZodRawIssue = {
-        code: 'custom',
-        input,
-        message: 'no matching condition',
-      }
-      payload.value = NEVER
-      for (const [condition, parser] of def.switchMap) {
-        const conditionResult = safeParse(condition, input)
-        if (conditionResult.success) unfoundIssue = undefined
-        else continue
-        const parseResult = safeParse(parser, input)
-        if (parseResult.success) {
-          payload.value = parseResult.data
-        } else {
-          for (const issue of parseResult.error.issues) {
-            payload.issues.push({
-              ...issue,
-              input: input as any,
-            })
-          }
-        }
-        break
-      }
-      if (unfoundIssue) payload.issues.push(unfoundIssue)
-      return payload
-    }
+    // The async variant exists because sync safeParse throws on parsers
+    // with async refinements; which one runs is decided by the parse
+    // context so sync callers keep working unchanged.
+    inst._zod.parse = (payload, ctx) =>
+      ctx.async ? parseSwitchAsync(def, payload) : parseSwitchSync(def, payload)
   },
 )
+
+function parseSwitchSync(
+  def: ZodSwitchDef,
+  payload: ParsePayload,
+): ParsePayload {
+  const input = payload.value
+  let unfoundIssue = noMatchingConditionIssue(input)
+  payload.value = NEVER
+  for (const [condition, parser] of def.switchMap) {
+    const conditionResult = safeParse(condition, input)
+    if (conditionResult.success) unfoundIssue = undefined
+    else continue
+    applyCaseResult(payload, input, safeParse(parser, input))
+    break
+  }
+  if (unfoundIssue) payload.issues.push(unfoundIssue)
+  return payload
+}
+
+async function parseSwitchAsync(
+  def: ZodSwitchDef,
+  payload: ParsePayload,
+): Promise<ParsePayload> {
+  const input = payload.value
+  let unfoundIssue = noMatchingConditionIssue(input)
+  payload.value = NEVER
+  for (const [condition, parser] of def.switchMap) {
+    const conditionResult = await safeParseAsync(condition, input)
+    if (conditionResult.success) unfoundIssue = undefined
+    else continue
+    applyCaseResult(payload, input, await safeParseAsync(parser, input))
+    break
+  }
+  if (unfoundIssue) payload.issues.push(unfoundIssue)
+  return payload
+}
+
+function noMatchingConditionIssue(input: unknown): $ZodRawIssue | undefined {
+  return {
+    code: 'custom',
+    input,
+    message: 'no matching condition',
+  }
+}
+
+function applyCaseResult(
+  payload: ParsePayload,
+  input: unknown,
+  parseResult: ReturnType<typeof safeParse>,
+) {
+  if (parseResult.success) {
+    payload.value = parseResult.data
+  } else {
+    for (const issue of parseResult.error.issues) {
+      payload.issues.push({
+        ...issue,
+        input: input as any,
+      })
+    }
+  }
+}
 
 /**
  * Check if a Zod schema is a ZodSwitch instance.
