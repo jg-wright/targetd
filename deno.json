@@ -30,7 +30,7 @@
   },
   "tasks": {
     "check": "deno check --frozen packages/**/src",
-    "commitlint": "deno run --permission-set=commitlint @commitlint/cli",
+    "commitlint": "deno run --permission-set=commitlint --allow-write=$TMPDIR @commitlint/cli",
     "hook": "deno run --permission-set=hook https://deno.land/x/deno_hooks@0.1.1/mod.ts",
     "test": "deno test --frozen --permission-set=test packages/**/test",
     "test:dev": "deno test --permission-set=test packages/**/test"
@@ -39,9 +39,9 @@
     "./packages/*"
   ],
   "imports": {
-    "@commitlint/cli": "npm:@commitlint/cli@^21.0.2",
-    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.0.2",
-    "@commitlint/types": "npm:@commitlint/types@^21.0.1",
-    "lint-staged": "npm:lint-staged@^17.0.7"
+    "@commitlint/cli": "npm:@commitlint/cli@^21.2.1",
+    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.2.0",
+    "@commitlint/types": "npm:@commitlint/types@^21.2.0",
+    "lint-staged": "npm:lint-staged@^17.0.8"
   }
 }
