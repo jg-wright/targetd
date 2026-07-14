@@ -13,6 +13,8 @@ jobs:
     needs: get-deno-version
     container:
       image: denoland/deno:${{ needs.get-deno-version.outputs.version }}
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/test

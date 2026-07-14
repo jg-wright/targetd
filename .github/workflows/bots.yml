@@ -8,9 +8,15 @@ jobs:
   auto-approve:
     name: Auto Approve
     runs-on: ubuntu-latest
-    if: github.actor == 'renovate[bot]'
+    if: github.actor == 'dependabot[bot]'
+    permissions:
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v7
-      - uses: hmarr/auto-approve-action@v4.0.0
+      - id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: hmarr/auto-approve-action@v4
+        if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

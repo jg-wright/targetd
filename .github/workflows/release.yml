@@ -13,6 +13,7 @@ jobs:
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
+    permissions: {}
     steps:
       - uses: actions/create-github-app-token@v3
         id: app-token
@@ -45,5 +46,6 @@ jobs:
           deno-version-file: .dvmrc
       - uses: ./.github/actions/test
       - working-directory: ${{ matrix.path_released }}
-        run: if [ "$(cat deno.json | jq -r '.private // false')" != "true" ]; then deno
+        run:
+          if [ "$(cat deno.json | jq -r '.private // false')" != "true" ]; then deno
           publish; fi
