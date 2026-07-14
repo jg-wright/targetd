@@ -438,6 +438,7 @@ export default class Data<$ extends DataSchema = DataSchema>
     const resolvedPayload = resolveVariables(
       resolvableVariables,
       payload,
+      new Set(objectKeys(nonResolvableVariables)),
     )
 
     return objectSize(nonResolvableVariables)

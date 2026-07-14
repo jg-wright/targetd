@@ -57,7 +57,10 @@ export type DataItemVariableResolverParser = ZodMiniPipe<
 >
 
 export interface VariableResolver {
-  (variables: Record<string, any>): any
+  (
+    variables: Record<string, any>,
+    keepUnresolved?: ReadonlySet<string>,
+  ): any
   $$resolver$$: true
 }
 
@@ -66,12 +69,29 @@ export function isVariableResolver(x: unknown): x is VariableResolver {
     x.$$resolver$$ === true
 }
 
-export function resolveVariables(variables: Record<string, any>, x: unknown) {
+/**
+ * Substitute variable resolvers within a payload with their values.
+ *
+ * @param variables - Resolved variable values by name.
+ * @param x - The payload to resolve.
+ * @param keepUnresolved - Variable names allowed to stay as `{{name}}`
+ *   placeholders (fall-through variables that a downstream service will
+ *   resolve). Any other unresolvable variable reference throws.
+ */
+export function resolveVariables(
+  variables: Record<string, any>,
+  x: unknown,
+  keepUnresolved: ReadonlySet<string> = new Set(),
+) {
   return Array.isArray(x)
-    ? recursivelyResolveArrayVariables(variables, x)
+    ? recursivelyResolveArrayVariables(variables, x, keepUnresolved)
     : typeof x === 'object' && x !== null
-    ? recursivelyResolveObjectVariables(variables, x as Record<string, unknown>)
-    : resolveVariable(variables, x)
+    ? recursivelyResolveObjectVariables(
+      variables,
+      x as Record<string, unknown>,
+      keepUnresolved,
+    )
+    : resolveVariable(variables, x, keepUnresolved)
 }
 
 export function isVariableString(input: string): input is VariableString {
@@ -80,22 +100,31 @@ export function isVariableString(input: string): input is VariableString {
 
 type VariableString = `{{${string}}}`
 
-function resolveVariable(variables: Record<string, any>, x: unknown) {
-  return isVariableResolver(x) ? x(variables) : x
+function resolveVariable(
+  variables: Record<string, any>,
+  x: unknown,
+  keepUnresolved: ReadonlySet<string>,
+) {
+  return isVariableResolver(x) ? x(variables, keepUnresolved) : x
 }
 
 function recursivelyResolveArrayVariables(
   variables: Record<string, any>,
   x: unknown[],
+  keepUnresolved: ReadonlySet<string>,
 ): unknown[] {
-  return x.map((value) => resolveVariables(variables, value))
+  return x.map((value) => resolveVariables(variables, value, keepUnresolved))
 }
 
 function recursivelyResolveObjectVariables(
   variables: Record<string, any>,
   x: Record<string, unknown>,
+  keepUnresolved: ReadonlySet<string>,
 ): Record<string, unknown> {
-  return objectMap(x, (value) => resolveVariables(variables, value))
+  return objectMap(
+    x,
+    (value) => resolveVariables(variables, value, keepUnresolved),
+  )
 }
 
 function stringToVariableResolver(
@@ -105,8 +134,19 @@ function stringToVariableResolver(
   ctx: ParsePayload,
 ): VariableResolver {
   const key = extractVariableName(input)
-  const resolver: VariableResolver = (variables: Record<string, any>) =>
-    variables[key] ?? input
+  const resolver: VariableResolver = (
+    variables: Record<string, any>,
+    keepUnresolved?: ReadonlySet<string>,
+  ) => {
+    // An `in` check rather than `??` so a variable legitimately resolving
+    // to null or undefined is substituted, not left as a placeholder.
+    if (key in variables) return variables[key]
+    if (keepUnresolved?.has(key)) return input
+    throw new Error(
+      `Unable to resolve variable "${key}": no rule for the variable matched the query. ` +
+        `Add an untargeted rule to "${key}" if a fallback value is intended.`,
+    )
+  }
   resolver.$$resolver$$ = true
   registry.set(key, {
     ctx,

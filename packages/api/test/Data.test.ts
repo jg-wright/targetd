@@ -804,6 +804,43 @@ Deno.test('variables using fallthrough targeting', async (t) => {
   await assertSnapshot(t, await data.getPayload('foo', { channel: 'bar' }))
 })
 
+Deno.test('unresolvable variables error instead of leaking placeholders', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.strictObject({ n: z.number() }) })
+      .useTargeting({ channel: targetIncludes(z.string()) }),
+  )
+    .addRules('foo', {
+      variables: {
+        v: [{ targeting: { channel: ['news'] }, payload: 1 }],
+      },
+      rules: [{ payload: { n: '{{v}}' } }],
+    })
+
+  assertEquals(await data.getPayload('foo', { channel: 'news' }), { n: 1 })
+
+  // Without a matching variable rule the payload cannot satisfy its schema —
+  // previously this returned { n: '{{v}}' }
+  await assertRejects(
+    () => data.getPayload('foo'),
+    Error,
+    'Unable to resolve variable "v"',
+  )
+})
+
+Deno.test('variables resolving to null are substituted', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.strictObject({ a: z.null() }) }),
+  )
+    .addRules('foo', {
+      variables: { v: [{ payload: null }] },
+      rules: [{ payload: { a: '{{v}}' } }],
+    })
+
+  assertEquals(await data.getPayload('foo'), { a: null })
+})
+
 Deno.test('getPayloads with variables using fallthrough targeting', async () => {
   const data = await Data.create(
     DataSchema.create()
