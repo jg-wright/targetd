@@ -209,7 +209,10 @@ function canRulesCombine(
     deepEqual(aTargeting, bTargeting) &&
       (bTargetingKeys.length !== objectSize(b.targeting || {}) ||
         aTargetingKeys.length !== objectSize(a.targeting || {})) ||
-    !bTargetingKeys.length && !aTargetingKeys.length
+    // An untargeted rule can only fold into a preceding fall-through rule.
+    // Two plainly untargeted rules must stay separate, otherwise the first
+    // unconditional payload would be returned as a fall-through envelope.
+    !bTargetingKeys.length && !aTargetingKeys.length && 'fallThrough' in a
   )
 }
 

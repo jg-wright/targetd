@@ -100,6 +100,130 @@ Deno.test('getPayload', async () => {
   )
 })
 
+Deno.test('targetEquals with falsy query values', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.string() })
+      .useTargeting({ highTide: targetEquals(z.boolean()) }),
+  )
+    .addRules('foo', [
+      { targeting: { highTide: true }, payload: 'high' },
+      { targeting: { highTide: false }, payload: 'low' },
+      { payload: 'default' },
+    ])
+
+  assertStrictEquals(await data.getPayload('foo', { highTide: true }), 'high')
+  assertStrictEquals(await data.getPayload('foo', { highTide: false }), 'low')
+  assertStrictEquals(await data.getPayload('foo'), 'default')
+})
+
+Deno.test('targetEquals with negation', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.string() })
+      .useTargeting({ env: targetEquals(z.string(), { withNegate: true }) }),
+  )
+    .addRules('foo', [
+      { targeting: { env: '!staging' }, payload: 'not staging' },
+      { targeting: { env: 'staging' }, payload: 'staging' },
+      { payload: 'default' },
+    ])
+
+  assertStrictEquals(
+    await data.getPayload('foo', { env: 'prod' }),
+    'not staging',
+  )
+  assertStrictEquals(
+    await data.getPayload('foo', { env: 'staging' }),
+    'staging',
+  )
+  assertStrictEquals(await data.getPayload('foo'), 'default')
+})
+
+Deno.test('targetIncludes with negation', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.string() })
+      .useTargeting({
+        country: targetIncludes(z.string(), { withNegate: true }),
+      }),
+  )
+    .addRules('foo', [
+      { targeting: { country: ['US'] }, payload: 'US only' },
+      { targeting: { country: ['!FR'] }, payload: 'anywhere but France' },
+      { payload: 'default' },
+    ])
+
+  assertStrictEquals(
+    await data.getPayload('foo', { country: 'US' }),
+    'US only',
+  )
+  assertStrictEquals(
+    await data.getPayload('foo', { country: 'DE' }),
+    'anywhere but France',
+  )
+  assertStrictEquals(await data.getPayload('foo', { country: 'FR' }), 'default')
+})
+
+Deno.test('consecutive untargeted rules return the first payload', async () => {
+  const data = await Data.create(
+    DataSchema.create().usePayload({ foo: z.string() }),
+  )
+    .addRules('foo', [{ payload: 'a' }, { payload: 'b' }])
+
+  assertStrictEquals(await data.getPayload('foo'), 'a')
+})
+
+Deno.test('addRules can be called again for the same name', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.string() })
+      .useTargeting({ weather: targetIncludes(z.string()) })
+      .useFallThroughTargeting({ browser: targetIncludes(z.string()) }),
+  )
+    .addRules('foo', [
+      {
+        targeting: { weather: ['sunny'], browser: ['chrome'] },
+        payload: '😎',
+      },
+    ])
+    .addRules('foo', [{ payload: 'default' }])
+
+  assertStrictEquals(await data.getPayload('foo'), 'default')
+  assertEquals(await data.getPayload('foo', { weather: 'sunny' }), {
+    __rules__: [{ targeting: { browser: ['chrome'] }, payload: '😎' }],
+  })
+})
+
+Deno.test('addRules again after rules with variables', async () => {
+  const data = await Data.create(
+    DataSchema.create().usePayload({ foo: z.string() }),
+  )
+    .addRules('foo', {
+      variables: { v: [{ payload: 'hello' }] },
+      rules: [{ payload: '{{v}}' }],
+    })
+    .addRules('foo', [{ payload: 'unused fallback' }])
+
+  assertStrictEquals(await data.getPayload('foo'), 'hello')
+})
+
+Deno.test('insert rejects unknown payload names and targeting keys', async () => {
+  const data = Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.string() })
+      .useTargeting({ weather: targetIncludes(z.string()) }),
+  )
+
+  await assertRejects(() => data.insert({ bar: 'nope' } as any))
+
+  await assertRejects(() =>
+    data.insert({
+      foo: { __rules__: [{ payload: 'x', targeting: { nonsense: 'y' } }] },
+    } as any)
+  )
+})
+
 Deno.test('targeting with multiple conditions', async () => {
   const data = await Data.create(
     DataSchema.create()

@@ -1,6 +1,7 @@
 import type TargetingDescriptor from '../parsers/TargetingDescriptor.ts'
 import type { $ZodArray, $ZodType, output } from 'zod/v4/core'
 import { array } from 'zod/mini'
+import { isNegation } from './negation.ts'
 
 /**
  * Create a targeting descriptor that matches when a targeting array includes the query value.
@@ -41,13 +42,20 @@ export function targetIncludes<T extends $ZodType>(
   options: { withNegate?: boolean } = {},
 ): TargetingDescriptor<$ZodArray<T>, T> {
   return {
-    predicate: (q) => (t) =>
-      !q || t.includes(q) || (!!options.withNegate && checkNegate(q, t)),
+    predicate: (q) => (ts) =>
+      q !== undefined &&
+      (options.withNegate ? includesWithNegate(q, ts) : ts.includes(q)),
     queryParser: t,
     targetingParser: array(t),
   }
 }
 
-function checkNegate<T extends $ZodType>(q: output<T>, ts: output<T>[]) {
-  return ts.every((t) => t !== `!${q}`)
+function includesWithNegate<T extends $ZodType>(
+  q: output<T>,
+  ts: output<T>[],
+): boolean {
+  const negations = ts.filter(isNegation)
+  if (negations.some((t) => t === `!${q}`)) return false
+  const positives = ts.filter((t) => !isNegation(t))
+  return positives.length ? positives.includes(q) : negations.length > 0
 }

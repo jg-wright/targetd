@@ -183,10 +183,18 @@ snapshot[`fallThrough targeting 2`] = `
   foo: {
     __rules__: [
       {
-        payload: "🏄‍♂️",
+        payload: "😎",
         targeting: {
           weather: [
             "sunny",
+          ],
+        },
+      },
+      {
+        payload: "☂️",
+        targeting: {
+          weather: [
+            "rainy",
           ],
         },
       },

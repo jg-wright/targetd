@@ -6,7 +6,11 @@ import {
   objectMap,
   objectSize,
 } from './util.ts'
-import { type DataItemsOut, DataItemsParser } from './parsers/DataItems.ts'
+import {
+  type DataItemsIn,
+  type DataItemsOut,
+  DataItemsParser,
+} from './parsers/DataItems.ts'
 import type { DataItemIn, DataItemOut } from './parsers/DataItem.ts'
 import type { DataItemRule } from './parsers/DataItemRule.ts'
 import type { MaybeArray, MaybePromise, ZodPartialObject } from './types.ts'
@@ -62,7 +66,12 @@ import type { DataSchema } from './DataSchema.ts'
 export default class Data<$ extends DataSchema = DataSchema>
   implements InsertableData<$>, QueryableData<$> {
   readonly #schema: $
-  readonly #data: DataItemsOut<$>
+  readonly #dataOut: DataItemsOut<$>
+  // The pre-parse inputs behind #dataOut. Parsing transforms rules
+  // (fallthrough combination, variable resolvers), and parsed output is not
+  // valid parser input — so incremental addRules/insert must re-parse from
+  // these raw inputs, never from #dataOut.
+  readonly #dataIn: DataItemsIn<$>
   readonly #QueryParser: ZodPartialObject<$['queryParsers']>
 
   /**
@@ -88,7 +97,7 @@ export default class Data<$ extends DataSchema = DataSchema>
     schema: $,
   ): PromisedData<$> {
     return PromisedData.create(
-      new Data<$>(schema, {} as DataItemsOut<$>),
+      new Data<$>(schema, {} as DataItemsOut<$>, {}),
     )
   }
 
@@ -97,10 +106,12 @@ export default class Data<$ extends DataSchema = DataSchema>
    */
   private constructor(
     schema: $,
-    data: DataItemsOut<$>,
+    dataOut: DataItemsOut<$>,
+    dataIn: DataItemsIn<$>,
   ) {
     this.#schema = schema
-    this.#data = Object.freeze(data)
+    this.#dataOut = Object.freeze(dataOut)
+    this.#dataIn = Object.freeze(dataIn)
     this.#QueryParser = partial(
       strictObject(schema.queryParsers),
     ) as ZodPartialObject<$['queryParsers']>
@@ -119,7 +130,7 @@ export default class Data<$ extends DataSchema = DataSchema>
    * @returns The complete data structure with all rules and variables.
    */
   get data(): DataItemsOut<$> {
-    return this.#data
+    return this.#dataOut
   }
 
   /**
@@ -194,43 +205,41 @@ export default class Data<$ extends DataSchema = DataSchema>
    * ```
    */
   async insert(data: DT.InsertableData<$>): Promise<Data<$>> {
-    const newData = {
-      ...this.#data,
+    const newDataInItems: Record<string, unknown> = {}
+
+    for (const [name, value] of Object.entries(data)) {
+      const dataInItem = (this.#dataIn as Record<string, any>)[name] ||
+        {
+          rules: [],
+          variables: {},
+        }
+      newDataInItems[name] = {
+        rules: [
+          ...dataInItem.rules,
+          ...this.#isFallThroughRulesPayload(value!)
+            ? value.__rules__
+            : [{ payload: value }],
+        ],
+        variables: {
+          ...dataInItem.variables,
+          ...this.#isFallThroughRulesPayload(value!) ? value.__variables__ : {},
+        },
+      }
+    }
+
+    const dataOut = {
+      ...this.#dataOut,
       ...(await DataItemsParser(
         this.#schema.payloadParsers,
         this.#schema.targetingParsers,
         this.#schema.fallThroughTargetingParsers,
-        false,
-      ).parseAsync(
-        Object.entries(data).reduce((data, [name, value]) => {
-          const dataItem = this.#data[name] ||
-            {
-              rules: [],
-              variables: {},
-            }
-          return {
-            ...data,
-            [name]: {
-              ...dataItem,
-              rules: [
-                ...dataItem.rules,
-                ...this.#isFallThroughRulesPayload(value!)
-                  ? value.__rules__
-                  : [{ payload: value }],
-              ],
-              variables: {
-                ...dataItem.variables,
-                ...this.#isFallThroughRulesPayload(value!)
-                  ? value.__variables__
-                  : {},
-              },
-            },
-          }
-        }, {}),
-      )),
+      ).parseAsync(newDataInItems)),
     }
 
-    return new Data(this.#schema, newData)
+    return new Data(this.#schema, dataOut, {
+      ...this.#dataIn,
+      ...newDataInItems as DataItemsIn<$>,
+    })
   }
 
   readonly #isFallThroughRulesPayload = <
@@ -283,7 +292,7 @@ export default class Data<$ extends DataSchema = DataSchema>
       | DataItemIn<$, $['payloadParsers'][Name]>
       | DataItemRulesIn<$, $['payloadParsers'][Name]>,
   ): Promise<Data<$>> {
-    const dataItem = this.#data[name] ||
+    const dataInItem = (this.#dataIn as Record<string, any>)[name as string] ||
       {
         rules: [],
         variables: {},
@@ -292,25 +301,29 @@ export default class Data<$ extends DataSchema = DataSchema>
     const rules = Array.isArray(opts) ? opts : opts.rules
     const variables = Array.isArray(opts) ? {} : opts.variables
 
-    const data = {
-      ...this.#data,
+    const newDataInItem = {
+      rules: [...dataInItem.rules, ...rules],
+      variables: {
+        ...dataInItem.variables,
+        ...variables,
+      },
+    }
+
+    const dataOut = {
+      ...this.#dataOut,
       ...(await DataItemsParser(
         this.#schema.payloadParsers,
         this.#schema.targetingParsers,
         this.#schema.fallThroughTargetingParsers,
       ).parseAsync({
-        [name]: {
-          ...dataItem,
-          rules: [...dataItem.rules, ...rules],
-          variables: {
-            ...dataItem.variables,
-            ...variables,
-          },
-        },
+        [name]: newDataInItem,
       })),
     }
 
-    return new Data(this.#schema, data)
+    return new Data(this.#schema, dataOut, {
+      ...this.#dataIn,
+      [name]: newDataInItem,
+    })
   }
 
   /**
@@ -325,7 +338,7 @@ export default class Data<$ extends DataSchema = DataSchema>
    * ```
    */
   removeAllRules(): Data<$> {
-    return new Data(this.#schema, {} as DataItemsOut<$>)
+    return new Data(this.#schema, {} as DataItemsOut<$>, {})
   }
 
   /**
@@ -346,7 +359,7 @@ export default class Data<$ extends DataSchema = DataSchema>
     const payloads = {} as PT.Payloads<$>
 
     await Promise.all(
-      objectKeys(this.#data).map(async (name) => {
+      objectKeys(this.#dataOut).map(async (name) => {
         payloads[name] = await this.getPayload(name, rawQuery)
       }),
     )
@@ -531,7 +544,7 @@ export default class Data<$ extends DataSchema = DataSchema>
   #getTargetableItem<Name extends keyof $['payloadParsers']>(name: Name) {
     return (
       (
-        this.#data as unknown as {
+        this.#dataOut as unknown as {
           [Name in keyof $['payloadParsers']]: DataItemOut<
             $,
             $['payloadParsers'][Name]

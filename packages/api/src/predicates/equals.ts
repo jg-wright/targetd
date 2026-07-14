@@ -1,5 +1,6 @@
 import type TargetingDescriptor from '../parsers/TargetingDescriptor.ts'
 import type { $ZodType } from 'zod/v4/core'
+import { isNegation } from './negation.ts'
 
 /**
  * Create a targeting descriptor that matches when the query value exactly equals the targeting value.
@@ -38,7 +39,7 @@ export function targetEquals<T extends $ZodType>(
 ): TargetingDescriptor<T, T> {
   return {
     predicate: (q) => (t) =>
-      !q || q === t || (!!options.withNegate && t !== `!${q}`),
+      options.withNegate && isNegation(t) ? t !== `!${q}` : q === t,
     queryParser: t,
     targetingParser: t,
   }
