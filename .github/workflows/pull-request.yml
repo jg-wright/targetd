@@ -9,4 +9,6 @@ concurrency:
 
 jobs:
   test:
+    permissions:
+      contents: read
     uses: ./.github/workflows/test.yml

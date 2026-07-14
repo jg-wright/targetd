@@ -5,6 +5,8 @@ on:
 
 jobs:
   get-deno-version:
+    permissions:
+      contents: read
     uses: ./.github/workflows/get-deno-version.yml
 
   test:
