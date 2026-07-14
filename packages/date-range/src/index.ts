@@ -5,6 +5,7 @@ import {
 import {
   array,
   partial,
+  refine,
   regex,
   strictObject,
   string,
@@ -24,6 +25,9 @@ const isoDateTimeParser: ISODateTimeParser = string().check(
     /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])(T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?)?$/,
     'Must represent an ISO date',
   ),
+  // The regex only validates digit shapes; V8 rolls dates like 2024-02-30
+  // over to the next month rather than rejecting them.
+  refine(isValidISODate, 'Must represent a valid calendar date'),
 )
 
 type DateRangeParser = ZodMiniObject<{
@@ -50,6 +54,10 @@ const targetingParser: TargetingParser = union([
 /**
  * Built-in targeting descriptor for date range queries in ISO 8601 format.
  * Automatically evaluates against the current time when no query is provided.
+ *
+ * Range bounds are inclusive and optional — a missing bound is unbounded.
+ * Targeting may also be an array of ranges, matching when any range matches;
+ * an empty array matches every query.
  *
  * @example
  * ```ts
@@ -104,10 +112,16 @@ function dateRangesPredicate(ts: DateRange[], q?: DateRange): boolean {
 }
 
 function queryDateRange(t: DateRange, q: DateRange): boolean {
-  const qStart = q.start ? new Date(q.start).getTime() : 0
-  const tStart = t.start ? new Date(t.start).getTime() : 0
-  const qEnd = q.end ? new Date(q.end).getTime() : Infinity
-  const tEnd = t.end ? new Date(t.end).getTime() : Infinity
+  const qStart = parseTime(q.start, -Infinity)
+  const tStart = parseTime(t.start, -Infinity)
+  const qEnd = parseTime(q.end, Infinity)
+  const tEnd = parseTime(t.end, Infinity)
+  if (
+    Number.isNaN(qStart) || Number.isNaN(tStart) ||
+    Number.isNaN(qEnd) || Number.isNaN(tEnd)
+  ) {
+    return false
+  }
   const tooLate = tEnd < qStart
   const tooEarly = tStart > qEnd
   return !tooLate && !tooEarly
@@ -115,7 +129,30 @@ function queryDateRange(t: DateRange, q: DateRange): boolean {
 
 function queryDateRangeAgainstNow(t: DateRange) {
   const now = Date.now()
-  const tooLate = !!t.end && new Date(t.end).getTime() <= now
-  const tooEarly = !!t.start && new Date(t.start).getTime() > now
-  return !tooLate && !tooEarly
+  const tStart = parseTime(t.start, -Infinity)
+  const tEnd = parseTime(t.end, Infinity)
+  if (Number.isNaN(tStart) || Number.isNaN(tEnd)) return false
+  return tStart <= now && tEnd >= now
+}
+
+// A missing bound is unbounded rather than epoch 0 — otherwise every
+// pre-1970 range comparison is wrong. NaN (an invalid date that slipped past
+// parsing) is returned as-is so predicates can fail closed.
+function parseTime(value: string | undefined, defaultTime: number): number {
+  return value === undefined ? defaultTime : new Date(value).getTime()
+}
+
+function isValidISODate(value: string): boolean {
+  if (Number.isNaN(new Date(value).getTime())) return false
+  const match = /^(-?\d+)-(\d{2})-(\d{2})/.exec(value)
+  if (!match) return false
+  const [year, month, day] = [
+    Number(match[1]),
+    Number(match[2]),
+    Number(match[3]),
+  ]
+  // Round-trip through Date to detect rollover (e.g. Feb 30 → Mar 1)
+  const date = new Date(0)
+  date.setUTCFullYear(year, month - 1, day)
+  return date.getUTCMonth() === month - 1 && date.getUTCDate() === day
 }
