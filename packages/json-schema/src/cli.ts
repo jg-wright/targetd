@@ -1,4 +1,5 @@
 import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
 import * as path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { writeFile } from 'node:fs/promises'
@@ -18,18 +19,18 @@ const { dataExport, inputModule, outputFile } = await yargs()
     inputModule: {
       alias: 'i',
       demandOption: true,
-      describe: 'The input module, relative to the root of the project',
+      describe: 'The input module, relative to the current working directory',
       string: true,
     },
     outputFile: {
       alias: 'o',
       describe:
-        'When specified, the JSONSchema will be written to this file (relative to the root of the project).',
+        'When specified, the JSONSchema will be written to this file (relative to the current working directory).',
       string: true,
     },
   })
   .help()
-  .parseAsync(argv)
+  .parseAsync(hideBin(argv))
 
 const input = await import(
   pathToFileURL(path.resolve(cwd(), inputModule)).href
