@@ -95,7 +95,7 @@ export class Client<$ extends DataSchema = DataSchema>
     const query = this.#data.QueryParser.parse(rawQuery ?? {})
     const urlSearchParams = queryToURLSearchParams(query)
     const response = await fetch(
-      `${this.#baseURL}/${String(name)}?${urlSearchParams}`,
+      `${this.#baseURL}/${encodeURIComponent(String(name))}?${urlSearchParams}`,
       {
         method: 'GET',
         ...this.#init,
@@ -106,17 +106,8 @@ export class Client<$ extends DataSchema = DataSchema>
       case response.status === 204:
         return undefined
       case response.status === 400:
-        await response.json()
-          .then(
-            (error) => {
-              if (error.name === '$ZodError') {
-                throw new ZodError(JSON.parse(error.message))
-              }
-            },
-            () => {},
-          )
-      // fallthrough
-      case response.status > 200 || response.status < 200:
+        throw await validationError(response)
+      case response.status !== 200:
         throw new ResponseError(response)
       default: {
         const data = await this.#data.insert({
@@ -151,17 +142,8 @@ export class Client<$ extends DataSchema = DataSchema>
 
     switch (true) {
       case response.status === 400:
-        await response.json()
-          .then(
-            (error) => {
-              if (error.name === '$ZodError') {
-                throw new ZodError(JSON.parse(error.message))
-              }
-            },
-            () => {},
-          )
-      // fallthrough
-      case response.status > 200 || response.status < 200:
+        throw await validationError(response)
+      case response.status !== 200:
         throw new ResponseError(response)
       default: {
         const data = await this.#data.insert((await response.json()) as any)
@@ -194,7 +176,9 @@ export class Client<$ extends DataSchema = DataSchema>
     const query = this.#data.QueryParser.parse(rawQuery ?? {})
     const urlSearchParams = queryToURLSearchParams(query)
     const response = await fetch(
-      `${this.#baseURL}/${String(name)}/all?${urlSearchParams}`,
+      `${this.#baseURL}/${
+        encodeURIComponent(String(name))
+      }/all?${urlSearchParams}`,
       {
         method: 'GET',
         ...this.#init,
@@ -203,17 +187,8 @@ export class Client<$ extends DataSchema = DataSchema>
 
     switch (true) {
       case response.status === 400:
-        await response.json()
-          .then(
-            (error) => {
-              if (error.name === '$ZodError') {
-                throw new ZodError(JSON.parse(error.message))
-              }
-            },
-            () => {},
-          )
-      // fallthrough
-      case response.status > 200 || response.status < 200:
+        throw await validationError(response)
+      case response.status !== 200:
         throw new ResponseError(response)
       default: {
         const payloads = await response.json() as any[]
@@ -225,4 +200,17 @@ export class Client<$ extends DataSchema = DataSchema>
       }
     }
   }
+}
+
+/**
+ * Turn a 400 response into the error to throw: a ZodError rebuilt from the
+ * server's validation issues when the body carries them, otherwise a
+ * ResponseError. The response body is cloned before reading so callers can
+ * still consume `error.response`.
+ */
+async function validationError(response: Response): Promise<Error> {
+  const body = await response.clone().json().catch(() => undefined)
+  return body && Array.isArray(body.issues)
+    ? new ZodError(body.issues)
+    : new ResponseError(response)
 }

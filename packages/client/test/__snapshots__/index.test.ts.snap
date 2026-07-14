@@ -54,42 +54,16 @@ snapshot[`get all matching payloads 1`] = `
 
 snapshot[`get all matching payloads 2`] = `
 [
-  {
-    __rules__: [
-      {
-        payload: "😎",
-        targeting: {},
-      },
-      {
-        payload: "bar",
-        targeting: {},
-      },
-    ],
-  },
+  "😎",
+  "bar",
 ]
 `;
 
 snapshot[`get all matching payloads 3`] = `
 [
-  {
-    __rules__: [
-      {
-        payload: "🏄‍♂️",
-        targeting: {},
-      },
-      {
-        payload: "😎",
-        targeting: {},
-      },
-      {
-        payload: "🌊",
-        targeting: {},
-      },
-      {
-        payload: "bar",
-        targeting: {},
-      },
-    ],
-  },
+  "🏄‍♂️",
+  "😎",
+  "🌊",
+  "bar",
 ]
 `;
