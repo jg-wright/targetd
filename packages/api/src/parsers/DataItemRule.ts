@@ -27,9 +27,9 @@ import type { DataSchema } from '../DataSchema.ts'
  * ```ts
  * import { equal, assertThrows } from 'jsr:@std/assert'
  * import { z } from 'zod/mini'
- * import { variablesFor } from './variablesRegistry.ts'
+ * import { createVariablesRegistry } from './variablesRegistry.ts'
  * const dataItemRuleParser = DataItemRuleParser(
- *   variablesFor(z.number()),
+ *   createVariablesRegistry(),
  *   z.number(),
  *   {},
  *   {}
@@ -47,7 +47,7 @@ import type { DataSchema } from '../DataSchema.ts'
  * import { equal } from 'jsr:@std/assert'
  * import { z } from 'zod/mini'
  * const dataItemRuleParser = DataItemRuleParser(
- *   variablesFor(z.number()),
+ *   createVariablesRegistry(),
  *   z.number(),
  *   { foo: z.array(z.string()) },
  *   {}
@@ -69,7 +69,7 @@ import type { DataSchema } from '../DataSchema.ts'
  * import { assertThrows, equal } from 'jsr:@std/assert'
  * import { z } from 'zod/mini'
  * const dataItemRuleParser = DataItemRuleParser(
- *   variablesFor(z.number()),
+ *   createVariablesRegistry(),
  *   z.number(),
  *   {},
  *   { foo: z.array(z.string()) },

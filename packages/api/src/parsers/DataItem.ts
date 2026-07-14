@@ -12,7 +12,7 @@ import {
   DataItemRulesParser,
 } from './DataItemRules.ts'
 import { DataItemVariablesParser } from './DataItemVariablesParser.ts'
-import { variablesFor } from './variablesRegistry.ts'
+import { createVariablesRegistry } from './variablesRegistry.ts'
 import type { DataSchema } from '../DataSchema.ts'
 
 /**
@@ -33,7 +33,7 @@ export function DataItemParser<
   fallThroughTargeting: $['fallThroughTargetingParsers'],
   strictTargeting: boolean,
 ): DataItemParser<$, PayloadParser> {
-  const variablesRegistry = variablesFor(Payload)
+  const variablesRegistry = createVariablesRegistry()
   return strictObject({
     rules: DataItemRulesParser(
       variablesRegistry,
