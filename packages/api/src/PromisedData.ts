@@ -145,9 +145,9 @@ export class PromisedData<$ extends DataSchema> extends Promise<Data<$>>
   /**
    * Removes all rules from the Data instance.
    *
-   * @returns A Promise that resolves to a Data instance with all rules removed
+   * @returns A new PromisedData instance with all rules removed
    */
-  removeAllRules(): Promise<Data<$>> {
+  removeAllRules(): PromisedData<$> {
     return this.#create((data) => data.removeAllRules())
   }
 }

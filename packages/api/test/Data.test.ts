@@ -224,6 +224,22 @@ Deno.test('insert rejects unknown payload names and targeting keys', async () =>
   )
 })
 
+Deno.test('removeAllRules', async () => {
+  const promised = Data.create(
+    DataSchema.create().usePayload({ foo: z.string() }),
+  ).addRules('foo', [{ payload: 'bar' }])
+
+  const data = await promised
+  assertStrictEquals(await data.getPayload('foo'), 'bar')
+  assertStrictEquals(await data.removeAllRules().getPayload('foo'), undefined)
+
+  // Rules can be re-added after clearing, including via PromisedData chaining
+  const readded = await promised
+    .removeAllRules()
+    .addRules('foo', [{ payload: 'baz' }])
+  assertStrictEquals(await readded.getPayload('foo'), 'baz')
+})
+
 Deno.test('targeting with multiple conditions', async () => {
   const data = await Data.create(
     DataSchema.create()

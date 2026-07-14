@@ -1,7 +1,7 @@
 import {
   objectEntries,
   objectEveryAsync,
-  objectFitler,
+  objectFilter,
   objectKeys,
   objectMap,
   objectSize,
@@ -443,11 +443,11 @@ export default class Data<$ extends DataSchema = DataSchema>
     payload: PT.Payload<$, $['payloadParsers'][Name]>,
     variables: Record<string, any>,
   ): PT.Payload<$, $['payloadParsers'][Name]> {
-    const resolvableVariables = objectFitler(
+    const resolvableVariables = objectFilter(
       variables,
       (value) => !this.#isFallThroughRulesPayload(value),
     )
-    const nonResolvableVariables = objectFitler(
+    const nonResolvableVariables = objectFilter(
       variables,
       this.#isFallThroughRulesPayload,
     )

@@ -47,7 +47,7 @@ export function* objectIterator<T extends Record<string, unknown>>(
   }
 }
 
-export function objectFitler<T extends Record<string, unknown>>(
+export function objectFilter<T extends Record<string, unknown>>(
   obj: T,
   predicate: <K extends keyof T>(value: T[K], key: K) => boolean,
 ): Partial<T> {
@@ -82,7 +82,7 @@ export function intersection<T extends Record<string, unknown>>(
   aObj: T,
   bObj: Record<string, unknown>,
 ) {
-  return objectFitler(aObj, (_, key) => key in bObj)
+  return objectFilter(aObj, (_, key) => key in bObj)
 }
 
 export function intersectionKeys<T extends Record<string, unknown>>(

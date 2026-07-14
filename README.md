@@ -340,7 +340,7 @@ distributed systems.
 ## Contributing
 
 This is a monorepo managed with
-[Deno workspaces](https://deno.land/manual/basics/workspaces).
+[Deno workspaces](https://docs.deno.com/runtime/fundamentals/workspaces/).
 
 ### Development
 
