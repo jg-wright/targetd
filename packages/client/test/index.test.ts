@@ -140,6 +140,60 @@ Deno.test('get all matching payloads', async (t) => {
   )
 })
 
+Deno.test('fall-through rules resolve with the original query', async () => {
+  const payloads = { foo: z.string() }
+
+  // The server delegates the browser dimension to the client...
+  const serverData = await Data.create(
+    DataSchema.create()
+      .usePayload(payloads)
+      .useTargeting({ channel: targetIncludes(z.string()) })
+      .useFallThroughTargeting({ browser: targetIncludes(z.string()) }),
+  ).addRules('foo', [
+    {
+      targeting: { channel: ['news'], browser: ['chrome'] },
+      payload: 'chrome payload',
+    },
+    {
+      targeting: { channel: ['news'], browser: ['edge'] },
+      payload: 'edge payload',
+    },
+    { payload: 'default' },
+  ])
+
+  // ...where it is regular targeting
+  const clientSchema = DataSchema.create()
+    .usePayload(payloads)
+    .useTargeting({
+      channel: targetIncludes(z.string()),
+      browser: targetIncludes(z.string()),
+    })
+
+  const app = createServer(serverData)
+  const { promise, reject, resolve } = Promise.withResolvers<void>()
+  const server = app.listen(0, (error) => error ? reject(error) : resolve())
+  await promise
+  try {
+    const address = server.address() as AddressInfo
+    const client = await Client.create(
+      `http://localhost:${address.port}`,
+      clientSchema,
+    )
+
+    assertStrictEquals(
+      await client.getPayload('foo', { channel: 'news', browser: 'edge' }),
+      'edge payload',
+    )
+    assertStrictEquals(
+      await client.getPayload('foo', { channel: 'news', browser: 'chrome' }),
+      'chrome payload',
+    )
+    assertStrictEquals(await client.getPayload('foo'), 'default')
+  } finally {
+    await promisify(server.close.bind(server))()
+  }
+})
+
 Deno.test('error responses', async () => {
   await using service = await startService()
   const { client } = service

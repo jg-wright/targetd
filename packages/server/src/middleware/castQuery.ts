@@ -17,9 +17,15 @@ import type { $ZodType } from 'zod/v4/core'
  */
 export function castQuery(): RequestHandler {
   return function (req, res, next) {
-    const { queryParsers } = res.locals.data as Data
+    const { fallThroughTargetingParsers, queryParsers } = res.locals
+      .data as Data
     const query: ParsedQs = {}
     for (const [key, value] of Object.entries(req.query)) {
+      // Fall-through dimensions are resolved by a downstream service, not
+      // here — accept and ignore them so a client can send its full query.
+      if (key in fallThroughTargetingParsers && !(key in queryParsers)) {
+        continue
+      }
       const casted = key in queryParsers
         ? castValueToParser(value, queryParsers[key])
         : castValueHeuristically(value)

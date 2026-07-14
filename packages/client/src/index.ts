@@ -113,7 +113,9 @@ export class Client<$ extends DataSchema = DataSchema>
         const data = await this.#data.insert({
           [name]: await response.json(),
         } as any)
-        return data.getPayload(name)
+        // Re-evaluate with the original query: inserted fall-through rules
+        // carry targeting that is resolvable client-side
+        return data.getPayload(name, rawQuery)
       }
     }
   }
@@ -147,7 +149,7 @@ export class Client<$ extends DataSchema = DataSchema>
         throw new ResponseError(response)
       default: {
         const data = await this.#data.insert((await response.json()) as any)
-        return data.getPayloadForEachName()
+        return data.getPayloadForEachName(rawQuery)
       }
     }
   }
@@ -196,7 +198,7 @@ export class Client<$ extends DataSchema = DataSchema>
           name,
           payloads.map((payload) => ({ payload })) as any,
         )
-        return data.getPayloads(name)
+        return data.getPayloads(name, rawQuery)
       }
     }
   }
