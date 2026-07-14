@@ -3,8 +3,8 @@ import cors from 'cors'
 import express from 'express'
 import { errorHandler } from './middleware/error.ts'
 import { StatusError } from './StatusError.ts'
-import { castQueryArrayProps } from './middleware/castQueryArrayProps.ts'
-import { castQueryProp } from './middleware/castQueryProp.ts'
+import { castQuery } from './middleware/castQuery.ts'
+import { resolveData } from './middleware/resolveData.ts'
 import type { MaybeCallable, MaybePromise } from './types.ts'
 
 /**
@@ -20,6 +20,9 @@ export interface CreateServerOptions<
   app?: App
   /**
    * Array of query parameter names to use as path segments for REST-friendly URLs.
+   *
+   * Payload-name routes take precedence: a single path segment that matches a
+   * payload name is served by the `/:name` endpoint, not the path structure.
    *
    * @example
    * ```ts
@@ -90,20 +93,64 @@ export function createServer<
   }: CreateServerOptions<$, App> = {},
 ): App {
   const getData = typeof data === 'function' ? data : () => data
+  const hasPathStructure = !!pathStructure?.length
 
   let server = app.set('query parser', 'extended').use(cors())
+    .get(
+      '/:name/all',
+      resolveData(getData),
+      castQuery(),
+      async (req, res, next) => {
+        const data = res.locals.data as Data<$>
+        const name = req.params.name as string
 
-  if (pathStructure) {
+        if (!(name in data.payloadParsers)) {
+          if (hasPathStructure) return next('route')
+          throw new StatusError(404, `Unknown data property ${name}`)
+        }
+
+        res.json(
+          await data.getPayloads(
+            name,
+            res.locals.query as QT.Raw<$['queryParsers']>,
+          ),
+        )
+      },
+    )
+    .get(
+      '/:name',
+      resolveData(getData),
+      castQuery(),
+      async (req, res, next) => {
+        const data = res.locals.data as Data<$>
+        const name = req.params.name as string
+
+        if (!(name in data.payloadParsers)) {
+          if (hasPathStructure) return next('route')
+          throw new StatusError(404, `Unknown data property ${name}`)
+        }
+
+        const payload = await data.getPayload(
+          name,
+          res.locals.query as QT.Raw<$['queryParsers']>,
+        )
+
+        if (payload === undefined) res.sendStatus(204)
+        else res.json(payload)
+      },
+    )
+
+  if (hasPathStructure) {
     server = server.get(
-      `/:${pathStructure.join('/:')}`,
-      castQueryProp(),
-      castQueryArrayProps(getData),
+      `/:${pathStructure!.join('/:')}`,
+      resolveData(getData),
+      castQuery(),
       async (req, res) => {
         res.json(
-          await (await getData()).getPayloadForEachName(
+          await (res.locals.data as Data<$>).getPayloadForEachName(
             {
               ...req.params,
-              ...(res.locals.query ?? req.query),
+              ...(res.locals.query as object),
             } as QT.Raw<$['queryParsers']>,
           ),
         )
@@ -113,50 +160,13 @@ export function createServer<
 
   return server
     .get(
-      '/:name/all',
-      castQueryProp(),
-      castQueryArrayProps(getData),
-      async (req, res) => {
-        const query = (res.locals.query ?? req.query) as QT.Raw<
-          $['queryParsers']
-        >
-        const data = await getData()
-
-        if (!(req.params.name in data.payloadParsers)) {
-          throw new StatusError(404, `Unknown data property ${req.params.name}`)
-        }
-
-        res.json(await data.getPayloads(req.params.name, query))
-      },
-    )
-    .get(
-      '/:name',
-      castQueryProp(),
-      castQueryArrayProps(getData),
-      async (req, res) => {
-        const query = (res.locals.query ?? req.query) as QT.Raw<
-          $['queryParsers']
-        >
-        const data = await getData()
-
-        if (!(req.params.name in data.payloadParsers)) {
-          throw new StatusError(404, `Unknown data property ${req.params.name}`)
-        }
-
-        const payload = await data.getPayload(req.params.name, query)
-
-        if (payload === undefined) res.sendStatus(204)
-        else res.json(payload)
-      },
-    )
-    .get(
       '/',
-      castQueryProp(),
-      castQueryArrayProps(getData),
-      async (req, res) => {
+      resolveData(getData),
+      castQuery(),
+      async (_req, res) => {
         res.json(
-          await (await getData()).getPayloadForEachName(
-            (res.locals.query ?? req.query) as QT.Raw<$['queryParsers']>,
+          await (res.locals.data as Data<$>).getPayloadForEachName(
+            res.locals.query as QT.Raw<$['queryParsers']>,
           ),
         )
       },

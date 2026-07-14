@@ -73,6 +73,13 @@ Deno.test('get one data point', async (t) => {
     .expect('"b t\'ing"')
     .expect(200)
 
+  // A numeric-looking value for a string query parser must stay a string
+  await request(server)
+    .get('/foo?weather=42')
+    .expect('Content-Type', /json/)
+    .expect('"bar"')
+    .expect(200)
+
   const response = await request(server)
     .get('/foo?weather=rainy&weather=sunny')
     .expect(400)
@@ -363,6 +370,40 @@ Deno.test('custom path structure', async () => {
         throw new Error(`Expected 5, got "${res.body.config}"`)
       }
     })
+
+  // The single payload endpoint remains reachable alongside a path structure
+  await request(server)
+    .get('/content?region=US&device=mobile')
+    .expect('Content-Type', /json/)
+    .expect('"US Mobile Content"')
+    .expect(200)
+
+  // ...and so does the all-matching-payloads endpoint
+  await request(server)
+    .get('/content/all?region=EU&device=mobile')
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .expect((res) => {
+      if (!Array.isArray(res.body) || res.body[0] !== 'EU Mobile Content') {
+        throw new Error(
+          `Expected all matching payloads, got ${JSON.stringify(res.body)}`,
+        )
+      }
+    })
+
+  // Path values that collide with reserved segments fall through to the
+  // path structure route
+  await request(server)
+    .get('/US/all')
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .expect((res) => {
+      if (res.body.content !== 'Default Content') {
+        throw new Error(
+          `Expected "Default Content", got "${res.body.content}"`,
+        )
+      }
+    })
 })
 
 Deno.test('get all matching payloads', async (t) => {
@@ -402,11 +443,11 @@ Deno.test('get all matching payloads', async (t) => {
 Deno.test('error handling', async (t) => {
   await using server = await createDisposableServer()
 
-  // Test 404 for non-existent payload name
+  // Test 404 for non-existent payload name — the body carries the message
   await request(server)
     .get('/nonexistent')
     .expect('Content-Type', /json/)
-    .expect(404)
+    .expect(404, { status: 404, message: 'Unknown data property nonexistent' })
 
   // Test 400 for invalid query parameter (Zod validation error)
   let response = await request(server)
