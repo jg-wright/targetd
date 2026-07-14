@@ -13,3 +13,5 @@ runs:
       run: deno fmt --check
     - shell: bash
       run: deno task test
+    - shell: bash
+      run: deno publish --dry-run
