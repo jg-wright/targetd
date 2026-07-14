@@ -11,7 +11,7 @@
     "cors": "npm:cors@^2.8.6",
     "express": "npm:express@^5.2.1",
     "express-query-boolean": "npm:express-query-boolean@^2.0.0",
-    "qs": "npm:qs@^6.15.2",
+    "qs": "npm:qs@^6.15.3",
     "zod": "npm:zod@~4.4.3"
   },
   "lint": {
