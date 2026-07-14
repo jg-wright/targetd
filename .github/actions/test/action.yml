@@ -10,4 +10,6 @@ runs:
     - shell: bash
       run: deno lint
     - shell: bash
+      run: deno fmt --check
+    - shell: bash
       run: deno task test

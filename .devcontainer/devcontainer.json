@@ -13,5 +13,5 @@
       ]
     }
   },
-  "postStartCommand": "sudo deno upgrade && deno install"
+  "postStartCommand": "sudo deno upgrade $(cat .dvmrc) && deno install"
 }

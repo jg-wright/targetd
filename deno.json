@@ -1,5 +1,6 @@
 {
   "fmt": {
+    "exclude": ["**/CHANGELOG.md"],
     "semiColons": false,
     "singleQuote": true
   },
@@ -18,7 +19,7 @@
     "hook": {
       "read": ["./.git"],
       "run": ["git"],
-      "write": ["./hooks"]
+      "write": ["./.hooks"]
     },
     "test": {
       "env": true,
