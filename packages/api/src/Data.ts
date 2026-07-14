@@ -414,6 +414,19 @@ export default class Data<$ extends DataSchema = DataSchema>
     if (payload === undefined) return
 
     const variables = await this.#getVariables(targetableItem, predicate)
+    return this.#resolvePayloadVariables<Name>(payload, variables)
+  }
+
+  /**
+   * Resolves what variables it can within a payload. Variables that depend on
+   * fall-through targeting cannot be resolved yet — they are carried in a
+   * `__variables__` envelope for the receiving service to resolve, never
+   * substituted into the payload raw.
+   */
+  #resolvePayloadVariables<Name extends keyof $['payloadParsers']>(
+    payload: PT.Payload<$, $['payloadParsers'][Name]>,
+    variables: Record<string, any>,
+  ): PT.Payload<$, $['payloadParsers'][Name]> {
     const resolvableVariables = objectFitler(
       variables,
       (value) => !this.#isFallThroughRulesPayload(value),
@@ -495,7 +508,9 @@ export default class Data<$ extends DataSchema = DataSchema>
       }
     }
     const variables = await this.#getVariables(targetableItem, predicate)
-    return payloads.map((payload) => resolveVariables(variables, payload))
+    return payloads.map((payload) =>
+      this.#resolvePayloadVariables<Name>(payload, variables)
+    )
   }
 
   #mapRule<PayloadParser extends $ZodType>(

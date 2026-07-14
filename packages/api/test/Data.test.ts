@@ -804,6 +804,45 @@ Deno.test('variables using fallthrough targeting', async (t) => {
   await assertSnapshot(t, await data.getPayload('foo', { channel: 'bar' }))
 })
 
+Deno.test('getPayloads with variables using fallthrough targeting', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({
+        foo: z.strictObject({ a: z.string(), b: z.number() }),
+      })
+      .useTargeting({
+        channel: targetIncludes(z.enum(['foo', 'bar'])),
+      })
+      .useFallThroughTargeting({
+        browser: targetIncludes(z.enum(['chrome', 'edge'])),
+      }),
+  )
+    .addRules('foo', {
+      variables: {
+        a: [
+          {
+            targeting: { browser: ['chrome'] },
+            payload: 'needs the browser',
+          },
+          { payload: 'any browser' },
+        ],
+        b: [{ payload: 1 }],
+      },
+      rules: [
+        {
+          targeting: { channel: ['bar'] },
+          payload: { a: '{{a}}', b: '{{b}}' },
+        },
+      ],
+    })
+
+  // Fall-through variables must be enveloped exactly as getPayload does,
+  // never substituted into payloads as raw {__rules__} objects
+  assertEquals(await data.getPayloads('foo', { channel: 'bar' }), [
+    await data.getPayload('foo', { channel: 'bar' }),
+  ])
+})
+
 Deno.test('variables in records', async () => {
   const data = await Data.create(
     DataSchema.create()
