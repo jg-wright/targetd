@@ -19,6 +19,12 @@ export interface CreateServerOptions<
    */
   app?: App
   /**
+   * CORS configuration, passed to the `cors` middleware. Defaults to
+   * allowing all origins. Pass `false` to disable the middleware entirely
+   * (e.g. to mount your own).
+   */
+  cors?: cors.CorsOptions | boolean
+  /**
    * Array of query parameter names to use as path segments for REST-friendly URLs.
    *
    * Payload-name routes take precedence: a single path segment that matches a
@@ -89,13 +95,20 @@ export function createServer<
   data: MaybeCallable<MaybePromise<Data<$>>>,
   {
     app = express() as App,
+    cors: corsConfig = true,
     pathStructure,
   }: CreateServerOptions<$, App> = {},
 ): App {
   const getData = typeof data === 'function' ? data : () => data
   const hasPathStructure = !!pathStructure?.length
 
-  let server = app.set('query parser', 'extended').use(cors())
+  let server = app.set('query parser', 'extended')
+
+  if (corsConfig !== false) {
+    server = server.use(cors(corsConfig === true ? undefined : corsConfig))
+  }
+
+  server = server
     .get(
       '/:name/all',
       resolveData(getData),

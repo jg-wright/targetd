@@ -6,7 +6,7 @@ import { setTimeout } from 'node:timers/promises'
 // @ts-types='npm:@types/supertest'
 import request from 'npm:supertest'
 import z from 'zod'
-import { createServer } from '@targetd/server'
+import { createServer, type CreateServerOptions } from '@targetd/server'
 import { promisify } from 'node:util'
 import type { Server } from 'node:http'
 
@@ -127,11 +127,13 @@ Deno.test('get all', async (t) => {
 })
 
 async function createDisposableServer(options?: {
+  cors?: CreateServerOptions['cors']
   data?: Data
   pathStructure?: string[]
 }): Promise<Server & AsyncDisposable> {
   const data = options?.data ?? createData()
   const app = createServer(() => data, {
+    cors: options?.cors,
     pathStructure: options?.pathStructure as any,
   })
   const { promise, reject, resolve } = Promise.withResolvers<void>()
@@ -438,6 +440,37 @@ Deno.test('get all matching payloads', async (t) => {
   await request(server)
     .get('/nonexistent/all')
     .expect(404)
+})
+
+Deno.test('cors configuration', async () => {
+  // Default: any origin
+  {
+    await using server = await createDisposableServer()
+    await request(server)
+      .get('/foo')
+      .expect('Access-Control-Allow-Origin', '*')
+      .expect(200)
+  }
+
+  // Restricted to a specific origin
+  {
+    await using server = await createDisposableServer({
+      cors: { origin: 'https://example.com' },
+    })
+    await request(server)
+      .get('/foo')
+      .expect('Access-Control-Allow-Origin', 'https://example.com')
+      .expect(200)
+  }
+
+  // Disabled entirely
+  {
+    await using server = await createDisposableServer({ cors: false })
+    const response = await request(server).get('/foo').expect(200)
+    if ('access-control-allow-origin' in response.headers) {
+      throw new Error('Expected no CORS headers when disabled')
+    }
+  }
 })
 
 Deno.test('error handling', async (t) => {
