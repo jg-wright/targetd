@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@es-toolkit/es-toolkit@^1.46.1": "1.46.1",
+    "jsr:@es-toolkit/es-toolkit@^1.49.0": "1.49.0",
     "jsr:@std/assert@*": "1.0.14",
     "jsr:@std/assert@^1.0.13": "1.0.14",
     "jsr:@std/async@^1.0.13": "1.0.14",
@@ -39,8 +39,8 @@
     "npm:zod@~4.4.3": "4.4.3"
   },
   "jsr": {
-    "@es-toolkit/es-toolkit@1.46.1": {
-      "integrity": "88088d95646fd8b4277414865f8af4e3b241f9422ab750c4be10e8debed7a676"
+    "@es-toolkit/es-toolkit@1.49.0": {
+      "integrity": "65c5efb21703a5c7c4367d4428e2495d209804278ae32dd04d7a663a3104a40b"
     },
     "@std/assert@1.0.14": {
       "integrity": "68d0d4a43b365abc927f45a9b85c639ea18a9fab96ad92281e493e4ed84abaa4",
@@ -1093,6 +1093,7 @@
         "@conventional-changelog/git-client",
         "meow@13.2.0"
       ],
+      "deprecated": true,
       "bin": true
     },
     "glob@7.2.3": {
@@ -2102,7 +2103,7 @@
       },
       "packages/fs": {
         "dependencies": [
-          "jsr:@es-toolkit/es-toolkit@^1.46.1",
+          "jsr:@es-toolkit/es-toolkit@^1.49.0",
           "jsr:@targetd/api@10",
           "npm:@johngw/fs@^3.0.1",
           "npm:ts-toolbelt@^9.6.0",
@@ -2112,7 +2113,7 @@
       },
       "packages/json-schema": {
         "dependencies": [
-          "jsr:@es-toolkit/es-toolkit@^1.46.1",
+          "jsr:@es-toolkit/es-toolkit@^1.49.0",
           "jsr:@targetd/api@10",
           "npm:@types/yargs@^17.0.35",
           "npm:yargs@18",
