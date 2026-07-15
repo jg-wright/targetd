@@ -1,7 +1,7 @@
 {
   "name": "@targetd/client",
   "description": "Type-safe HTTP client for querying @targetd/server instances. Mirrors the Data API with full TypeScript inference.",
-  "version": "9.1.0",
+  "version": "9.1.1",
   "exports": "./src/index.ts",
   "imports": {
     "@targetd/api": "jsr:@targetd/api@^10.0.2",
