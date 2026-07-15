@@ -1,7 +1,7 @@
 {
   "name": "@targetd/fs",
   "description": "Load targeting rules from JSON/YAML files with hot-reloading support for @targetd/api Data instances.",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "exports": "./src/index.ts",
   "imports": {
     "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.49.0",

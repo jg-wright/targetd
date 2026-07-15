@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.0.2](https://github.com/jg-wright/targetd/compare/@targetd/json-schema-v7.0.1...@targetd/json-schema-v7.0.2) (2026-07-15)
+
+
+### Bug Fixes
+
+* **json-schema:** strip runtime binary from CLI argv; rewrite README ([b6dcfb3](https://github.com/jg-wright/targetd/commit/b6dcfb33bb7bf2413b77d1230e69f9558f3f50b3))
+
 ## [7.0.1](https://github.com/jg-wright/targetd/compare/@targetd/json-schema-v7.0.0...@targetd/json-schema-v7.0.1) (2026-05-18)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.2](https://github.com/jg-wright/targetd/compare/@targetd/fs-v9.0.1...@targetd/fs-v9.0.2) (2026-07-15)
+
+
+### Bug Fixes
+
+* **fs:** recursive watching and watcher lifecycle safety ([d390e75](https://github.com/jg-wright/targetd/commit/d390e75a2548c1c5864ae5bd64d4b12ab0b9b1e4))
+
 ## [9.0.1](https://github.com/jg-wright/targetd/compare/@targetd/fs-v9.0.0...@targetd/fs-v9.0.1) (2026-05-18)
 
 

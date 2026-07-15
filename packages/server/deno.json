@@ -1,7 +1,7 @@
 {
   "name": "@targetd/server",
   "description": "Express-based HTTP server for exposing @targetd/api Data instances via REST endpoints with built-in CORS and error handling.",
-  "version": "10.0.1",
+  "version": "10.1.0",
   "exports": "./src/index.ts",
   "imports": {
     "@johngw/error": "npm:@johngw/error@^2.2.2",

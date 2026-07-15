@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.0.2](https://github.com/jg-wright/targetd/compare/@targetd/date-range-v8.0.1...@targetd/date-range-v8.0.2) (2026-07-15)
+
+
+### Bug Fixes
+
+* **date-range:** unbounded defaults and calendar date validation ([a6aa8f7](https://github.com/jg-wright/targetd/commit/a6aa8f76dab252688889d155c685be9fa31abb7d))
+
 ## [8.0.1](https://github.com/jg-wright/targetd/compare/@targetd/date-range-v8.0.0...@targetd/date-range-v8.0.1) (2026-05-18)
 
 

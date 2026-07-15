@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.1.0](https://github.com/jg-wright/targetd/compare/@targetd/server-v10.0.1...@targetd/server-v10.1.0) (2026-07-15)
+
+
+### Features
+
+* **server:** configurable CORS ([65c94c1](https://github.com/jg-wright/targetd/commit/65c94c1796f59a7f1cbe39d053b80669e65a8b4f))
+
+
+### Bug Fixes
+
+* **client,server:** resolve fall-through rules with the original query ([c0cefb0](https://github.com/jg-wright/targetd/commit/c0cefb0a0a5c4fd9da05102ed94e278670d6762c))
+* **server:** route reachability, schema-driven casting, safe errors ([ee53968](https://github.com/jg-wright/targetd/commit/ee53968958729d7d54a0fb497030768843a0ecf9))
+
 ## [10.0.1](https://github.com/jg-wright/targetd/compare/@targetd/server-v10.0.0...@targetd/server-v10.0.1) (2026-05-18)
 
 
