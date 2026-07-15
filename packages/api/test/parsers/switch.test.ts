@@ -89,6 +89,7 @@ Deno.test('zodSwitch with async parsers', async () => {
   const parser = zodSwitch([
     [
       string(),
+      // deno-lint-ignore require-await
       string().check(refine(async (s) => s !== 'nope')),
     ],
     [any(), number()],
