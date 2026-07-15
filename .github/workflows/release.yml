@@ -6,7 +6,6 @@ on:
 
 jobs:
   release-github:
-    name: Github Release
     runs-on: ubuntu-latest
     concurrency:
       group: release
@@ -31,11 +30,9 @@ jobs:
   release-test:
     needs: [release-github]
     if: needs.release-github.outputs.releases_created == 'true'
-    runs-on: ubuntu-latest
     permissions:
       contents: read
-    steps:
-      - uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/test.yml
 
   release-jsr:
     needs: [release-github, release-test]
@@ -53,7 +50,6 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version-file: .dvmrc
-      - uses: ./.github/actions/test
       - working-directory: ${{ matrix.path_released }}
         run:
           if [ "$(cat deno.json | jq -r '.private // false')" != "true" ]; then deno
