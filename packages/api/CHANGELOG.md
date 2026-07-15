@@ -1,5 +1,23 @@
 # Changelog
 
+## [10.0.3](https://github.com/jg-wright/targetd/compare/@targetd/api-v10.0.2...@targetd/api-v10.0.3) (2026-07-15)
+
+
+### Bug Fixes
+
+* **api:** correct targeting predicates and incremental rule parsing ([c9fba11](https://github.com/jg-wright/targetd/commit/c9fba117bacb9693eeedfa3361ed677ee369b5e4))
+* **api:** envelope fall-through variables in getPayloads ([6024f8f](https://github.com/jg-wright/targetd/commit/6024f8f47e53c89ab2e59712f8d35b3b0ef2fa8b))
+* **api:** error on unresolvable variables instead of leaking placeholders ([0852a6e](https://github.com/jg-wright/targetd/commit/0852a6ed7a86272a4eaa7de304880fc524d1d7de))
+* **api:** harden envelope detection and deeply freeze rule data ([af56c77](https://github.com/jg-wright/targetd/commit/af56c77b2e33f05cadf1f0fb9ee7046ac9caa28f))
+* **api:** resolve variables in union, tuple, lazy and wrapped positions ([bf795aa](https://github.com/jg-wright/targetd/commit/bf795aaa3fd162079fbe5a44ac6d80c293b9b019))
+* **api:** return PromisedData from PromisedData.removeAllRules ([7d4cb66](https://github.com/jg-wright/targetd/commit/7d4cb66b300b9e14d3fe9915238836b03a2ba914))
+* **api:** support async parsers in zodSwitch ([1e19c9a](https://github.com/jg-wright/targetd/commit/1e19c9a902556076d1922f5fc46884f13cad55fe))
+
+
+### Performance Improvements
+
+* **api:** build targeting predicates once per query, not per rule ([9d69abf](https://github.com/jg-wright/targetd/commit/9d69abfc9d2e6293715b90166839d2774db8dd6b))
+
 ## [10.0.2](https://github.com/jg-wright/targetd/compare/@targetd/api-v10.0.1...@targetd/api-v10.0.2) (2026-06-01)
 
 

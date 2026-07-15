@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.1.1](https://github.com/jg-wright/targetd/compare/@targetd/client-v9.1.0...@targetd/client-v9.1.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* **client,server:** resolve fall-through rules with the original query ([c0cefb0](https://github.com/jg-wright/targetd/commit/c0cefb0a0a5c4fd9da05102ed94e278670d6762c))
+* **client:** rebuild server validation errors as ZodError ([dd3a122](https://github.com/jg-wright/targetd/commit/dd3a122de35f1bea1a5d05fec321a06994bbb99c))
+
 ## [9.1.0](https://github.com/jg-wright/targetd/compare/@targetd/client-v9.0.1...@targetd/client-v9.1.0) (2026-06-01)
 
 
