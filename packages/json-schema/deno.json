@@ -8,7 +8,7 @@
   },
   "imports": {
     "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.49.0",
-    "@targetd/api": "jsr:@targetd/api@^10.0.0",
+    "@targetd/api": "jsr:@targetd/api@^10.0.2",
     "@types/yargs": "npm:@types/yargs@^17.0.35",
     "yargs": "npm:yargs@^18.0.0",
     "zod": "npm:zod@~4.4.3"
