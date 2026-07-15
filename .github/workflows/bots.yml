@@ -5,18 +5,19 @@ on:
     types: [opened]
 
 jobs:
-  auto-approve:
-    name: Auto Approve
+  auto-merge:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     permissions:
+      contents: write
       pull-requests: write
     steps:
       - id: dependabot-metadata
         uses: dependabot/fetch-metadata@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: hmarr/auto-approve-action@v4
-        if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --squash '${{ github.event.pull_request.html_url }}'
