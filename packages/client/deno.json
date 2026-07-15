@@ -4,7 +4,7 @@
   "version": "9.1.0",
   "exports": "./src/index.ts",
   "imports": {
-    "@targetd/api": "jsr:@targetd/api@^10.0.0",
+    "@targetd/api": "jsr:@targetd/api@^10.0.2",
     "ts-toolbelt": "npm:ts-toolbelt@^9.6.0",
     "zod": "npm:zod@~4.4.3"
   },
