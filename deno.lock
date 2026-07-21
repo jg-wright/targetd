@@ -2191,20 +2191,20 @@
       },
       "packages/client": {
         "dependencies": [
-          "jsr:@targetd/api@^10.0.2",
+          "jsr:@targetd/api@^10.0.3",
           "npm:ts-toolbelt@^9.6.0",
           "npm:zod@~4.4.3"
         ]
       },
       "packages/date-range": {
         "dependencies": [
-          "jsr:@targetd/api@^10.0.2",
+          "jsr:@targetd/api@^10.0.3",
           "npm:zod@~4.4.3"
         ]
       },
       "packages/explode": {
         "dependencies": [
-          "jsr:@targetd/api@^10.0.2",
+          "jsr:@targetd/api@^10.0.3",
           "npm:flat@^6.0.1",
           "npm:ts-toolbelt@^9.6.0",
           "npm:zod@~4.4.3"
@@ -2213,7 +2213,7 @@
       "packages/fs": {
         "dependencies": [
           "jsr:@es-toolkit/es-toolkit@^1.49.0",
-          "jsr:@targetd/api@^10.0.2",
+          "jsr:@targetd/api@^10.0.3",
           "npm:@johngw/fs@^3.0.1",
           "npm:ts-toolbelt@^9.6.0",
           "npm:yaml@^2.9.0",
@@ -2223,7 +2223,7 @@
       "packages/json-schema": {
         "dependencies": [
           "jsr:@es-toolkit/es-toolkit@^1.49.0",
-          "jsr:@targetd/api@^10.0.2",
+          "jsr:@targetd/api@^10.0.3",
           "npm:@types/yargs@^17.0.35",
           "npm:yargs@18",
           "npm:zod@~4.4.3"
@@ -2231,7 +2231,7 @@
       },
       "packages/server": {
         "dependencies": [
-          "jsr:@targetd/api@^10.0.2",
+          "jsr:@targetd/api@^10.0.3",
           "npm:@johngw/error@^2.2.2",
           "npm:@types/express@^5.0.6",
           "npm:@types/qs@^6.15.1",
