@@ -44,6 +44,13 @@
       "include-component-in-tag": true,
       "extra-files": ["deno.json"]
     },
+    "packages/redis": {
+      "release-type": "simple",
+      "package-name": "@targetd/redis",
+      "tag-separator": "-",
+      "include-component-in-tag": true,
+      "extra-files": ["deno.json"]
+    },
     "packages/server": {
       "release-type": "simple",
       "package-name": "@targetd/server",

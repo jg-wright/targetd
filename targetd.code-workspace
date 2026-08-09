@@ -7,6 +7,7 @@
     { "name": "📦 @targetd/explode", "path": "packages/explode" },
     { "name": "📦 @targetd/fs", "path": "packages/fs" },
     { "name": "📦 @targetd/json-schema", "path": "packages/json-schema" },
+    { "name": "📦 @targetd/redis", "path": "packages/redis" },
     { "name": "📦 @targetd/server", "path": "packages/server" },
     { "name": "🤖 github", "path": ".github" }
   ],

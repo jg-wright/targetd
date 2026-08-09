@@ -5,7 +5,7 @@ import type { O, S, U } from 'ts-toolbelt'
  * Type utility that transforms flat payload keys into nested object structure.
  * Used with the explode function to get properly typed nested payloads.
  *
- * @template D - Data instance type to extract and transform payloads from.
+ * @template $ - Data schema.
  * @template PathSeparator - String literal for the path separator character(s) used in flat keys.
  *
  * @example

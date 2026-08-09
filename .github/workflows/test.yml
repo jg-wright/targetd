@@ -8,11 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v7
       - uses: denoland/setup-deno@v2
         with:
           deno-version-file: .dvmrc
+      - run: deno ci
       - run: deno check --frozen
       - run: deno lint
       - run: deno fmt --check
