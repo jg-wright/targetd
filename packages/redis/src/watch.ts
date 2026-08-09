@@ -144,8 +144,8 @@ export async function watch<$ extends DataSchema>(
     let error: Error | null = null
     try {
       data = await load(data.removeAllRules(), redis, { keyPrefix })
-    } catch ($error: any) {
-      error = $error
+    } catch (cause: unknown) {
+      error = cause instanceof Error ? cause : new Error(String(cause))
     } finally {
       mutex.release()
       if (!stopped) await onLoad(error, data)
