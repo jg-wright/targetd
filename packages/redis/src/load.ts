@@ -53,9 +53,9 @@ export async function load<$ extends DataSchema>(
 
   // Rules are first-match-wins. Different payload names are independent, but a
   // stable order keeps behaviour deterministic regardless of keyspace layout.
-  const keys = (await redis.keys(`${keyPrefix}*`)).sort((a, b) =>
-    a.localeCompare(b)
-  )
+  const keys = (await redis.keys(`${keyPrefix}*`))
+    .filter((key) => key.startsWith(keyPrefix))
+    .sort((a, b) => a.localeCompare(b))
 
   let result = data
 
