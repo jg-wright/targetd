@@ -2,9 +2,9 @@
   "packages/api": "10.0.3",
   "packages/client": "9.1.1",
   "packages/date-range": "8.0.2",
-  "packages/explode": "6.0.1",
+  "packages/explode": "6.1.0",
   "packages/fs": "9.0.2",
   "packages/json-schema": "7.0.2",
-  "packages/redis": "0.0.0",
+  "packages/redis": "1.0.0",
   "packages/server": "10.1.0"
 }
