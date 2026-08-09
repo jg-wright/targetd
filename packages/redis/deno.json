@@ -1,0 +1,36 @@
+{
+  "name": "@targetd/redis",
+  "description": "Load, save and watch @targetd/api rules from Redis with pub/sub hot-reloading via keyspace notifications.",
+  "version": "0.0.0",
+  "exports": "./src/index.ts",
+  "imports": {
+    "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.49.0",
+    "@targetd/api": "jsr:@targetd/api@^10.0.2",
+    "redis": "npm:redis@^4.7.0",
+    "zod": "npm:zod@~4.4.3"
+  },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-import-prefix",
+        "no-unversioned-import"
+      ]
+    }
+  },
+  "fmt": {
+    "semiColons": false,
+    "singleQuote": true
+  },
+  "tasks": {
+    "pwd": "echo $(pwd)",
+    "test": "deno test --allow-all --trace-leaks"
+  },
+  "publish": {
+    "include": [
+      "deno.json",
+      "src/",
+      "LICENSE",
+      "README.md"
+    ]
+  }
+}

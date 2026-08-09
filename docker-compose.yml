@@ -1,0 +1,10 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      test: redis-cli ping
