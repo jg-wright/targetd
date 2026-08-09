@@ -117,7 +117,7 @@ Deno.test({
     return withClient(keyPrefix, async (redis) => {
       await redis.set(`${keyPrefix}greeting`, 'not json')
       await assertRejects(
-        () => load(createData() as never, redis, { keyPrefix }),
+        async () => load(await createData(), redis, { keyPrefix }),
         Error,
         'invalid JSON',
       )
