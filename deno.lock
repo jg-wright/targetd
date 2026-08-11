@@ -34,7 +34,7 @@
     "npm:supertest@*": "7.2.2",
     "npm:ts-toolbelt@^9.6.0": "9.6.0",
     "npm:yaml@^2.9.0": "2.9.0",
-    "npm:yargs@18": "18.0.0",
+    "npm:yargs@^18.1.0": "18.1.0",
     "npm:zod@~4.4.3": "4.4.3"
   },
   "jsr": {
@@ -103,7 +103,7 @@
         "@commitlint/read",
         "@commitlint/types",
         "tinyexec",
-        "yargs@18.0.0"
+        "yargs@18.1.0"
       ],
       "bin": true
     },
@@ -1886,6 +1886,13 @@
         "strip-ansi@7.2.0"
       ]
     },
+    "string-width@8.2.2": {
+      "integrity": "sha512-GaPUh5gfdrYzqeVNZvUfT23vYYxXzKYidUcnMtJg/3rxRV63EFZy3k6xfKlmfeJD0176lnUV/Usr3XcwSvFzpg==",
+      "dependencies": [
+        "get-east-asian-width",
+        "strip-ansi@7.2.0"
+      ]
+    },
     "strip-ansi@6.0.1": {
       "integrity": "sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==",
       "dependencies": [
@@ -2112,13 +2119,13 @@
         "yargs-parser@21.1.1"
       ]
     },
-    "yargs@18.0.0": {
-      "integrity": "sha512-4UEqdc2RYGHZc7Doyqkrqiln3p9X2DZVxaGbwhn2pi7MrRagKaOcIKe8L3OxYcbhXLgLFUS3zAYuQjKBQgmuNg==",
+    "yargs@18.1.0": {
+      "integrity": "sha512-2rAgRKu54VsHkqI0/tYkmluGXHD4KW7yZoycuqDQ15QOTnc2VVfy0nN/1eMhnQLO00A+dwtK20xuCnc1YGeUyg==",
       "dependencies": [
         "cliui@9.0.1",
         "escalade",
         "get-caller-file",
-        "string-width@7.2.0",
+        "string-width@8.2.2",
         "y18n",
         "yargs-parser@22.0.0"
       ]
@@ -2178,7 +2185,7 @@
           "jsr:@es-toolkit/es-toolkit@^1.50.0",
           "jsr:@targetd/api@^10.0.3",
           "npm:@types/yargs@^17.0.35",
-          "npm:yargs@18",
+          "npm:yargs@^18.1.0",
           "npm:zod@~4.4.3"
         ]
       },
