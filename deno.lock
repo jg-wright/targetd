@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@es-toolkit/es-toolkit@^1.49.0": "1.49.0",
+    "jsr:@es-toolkit/es-toolkit@^1.50.0": "1.50.0",
     "jsr:@std/assert@*": "1.0.14",
     "jsr:@std/assert@^1.0.13": "1.0.14",
     "jsr:@std/async@^1.0.13": "1.0.14",
@@ -38,8 +38,8 @@
     "npm:zod@~4.4.3": "4.4.3"
   },
   "jsr": {
-    "@es-toolkit/es-toolkit@1.49.0": {
-      "integrity": "65c5efb21703a5c7c4367d4428e2495d209804278ae32dd04d7a663a3104a40b"
+    "@es-toolkit/es-toolkit@1.50.0": {
+      "integrity": "dc4681775f0c743fdcdf7cee65dfb615d22d8cad0fda7a00e256b579c0e0cccc"
     },
     "@std/assert@1.0.14": {
       "integrity": "68d0d4a43b365abc927f45a9b85c639ea18a9fab96ad92281e493e4ed84abaa4",
@@ -2165,7 +2165,7 @@
       },
       "packages/fs": {
         "dependencies": [
-          "jsr:@es-toolkit/es-toolkit@^1.49.0",
+          "jsr:@es-toolkit/es-toolkit@^1.50.0",
           "jsr:@targetd/api@^10.0.3",
           "npm:@johngw/fs@^3.0.1",
           "npm:ts-toolbelt@^9.6.0",
@@ -2175,7 +2175,7 @@
       },
       "packages/json-schema": {
         "dependencies": [
-          "jsr:@es-toolkit/es-toolkit@^1.49.0",
+          "jsr:@es-toolkit/es-toolkit@^1.50.0",
           "jsr:@targetd/api@^10.0.3",
           "npm:@types/yargs@^17.0.35",
           "npm:yargs@18",
@@ -2184,7 +2184,7 @@
       },
       "packages/redis": {
         "dependencies": [
-          "jsr:@es-toolkit/es-toolkit@^1.49.0",
+          "jsr:@es-toolkit/es-toolkit@^1.50.0",
           "jsr:@targetd/api@^10.0.2",
           "npm:redis@^4.7.0",
           "npm:zod@~4.4.3"
