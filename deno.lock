@@ -26,7 +26,7 @@
     "npm:express@^5.2.1": "5.2.1",
     "npm:fast-deep-equal@^3.1.3": "3.1.3",
     "npm:flat@^6.0.1": "6.0.1",
-    "npm:lint-staged@^17.1.0": "17.1.0",
+    "npm:lint-staged@^17.3.0": "17.3.0",
     "npm:lodash@*": "4.17.23",
     "npm:qs@^6.15.3": "6.15.3",
     "npm:redis@^4.7.0": "4.7.1",
@@ -1395,8 +1395,8 @@
     "lines-and-columns@1.2.4": {
       "integrity": "sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg=="
     },
-    "lint-staged@17.1.0": {
-      "integrity": "sha512-d7UQRu/9ZPgfu4+hu/k0wny5GEaIxo+2jb2LJqQDkE7cHRTm1HGqNUDq5UOwsGPpjpaNAFmgAsYo3TR+i9cSJw==",
+    "lint-staged@17.3.0": {
+      "integrity": "sha512-woZS3vNe3UKqBaLPvbLOtKRY4tLANpWQhom12MGWqC8Mh1lCOO+WgSwmX2amjJAqTY9BkXYW87fCUH5H9Ph6xw==",
       "dependencies": [
         "picomatch",
         "string-argv",
@@ -2132,7 +2132,7 @@
       "npm:@commitlint/cli@^21.2.1",
       "npm:@commitlint/config-conventional@^21.2.0",
       "npm:@commitlint/types@^21.2.0",
-      "npm:lint-staged@^17.1.0"
+      "npm:lint-staged@^17.3.0"
     ],
     "members": {
       "packages/api": {
