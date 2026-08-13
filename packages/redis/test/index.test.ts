@@ -6,7 +6,7 @@ import { createData } from './fixtures/data.ts'
 const REDIS_URL = Deno.env.get('REDIS_URL') ?? 'redis://127.0.0.1:6379'
 
 Deno.test('save then load', async () => {
-  await using redis = await useClient()
+  await using redis = await useRedis()
   await save(redis.client, {
     greeting: {
       rules: [
@@ -30,7 +30,7 @@ Deno.test('save then load', async () => {
 })
 
 Deno.test('remove deletes stored rules', async () => {
-  await using redis = await useClient()
+  await using redis = await useRedis()
   await save(redis.client, {
     greeting: { rules: [{ payload: 'Hi!' }] },
     farewell: { rules: [{ payload: 'Bye!' }] },
@@ -46,7 +46,7 @@ Deno.test('remove deletes stored rules', async () => {
 })
 
 Deno.test('load rejects invalid JSON with a descriptive error', async () => {
-  await using redis = await useClient()
+  await using redis = await useRedis()
   await redis.client.set(`${redis.keyPrefix}greeting`, 'not json')
   await assertRejects(
     async () =>
@@ -57,7 +57,7 @@ Deno.test('load rejects invalid JSON with a descriptive error', async () => {
 })
 
 Deno.test('watch reloads on change', async () => {
-  await using redis = await useClient()
+  await using redis = await useRedis()
 
   await save(redis.client, {
     greeting: { rules: [{ payload: 'Hi!' }] },
@@ -118,7 +118,7 @@ function useTimeout<T>(
   }
 }
 
-async function useClient(): Promise<
+async function useRedis(): Promise<
   AsyncDisposable & { client: RedisClientType; keyPrefix: string }
 > {
   const keyPrefix = `targetd-test:${crypto.randomUUID()}:`
