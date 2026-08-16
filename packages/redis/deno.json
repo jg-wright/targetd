@@ -6,7 +6,7 @@
   "imports": {
     "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.50.0",
     "@targetd/api": "jsr:@targetd/api@^10.0.3",
-    "redis": "npm:redis@^4.7.1",
+    "redis": "npm:redis@^6.2.1",
     "zod": "npm:zod@~4.4.3"
   },
   "lint": {
