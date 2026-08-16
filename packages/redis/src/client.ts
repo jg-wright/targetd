@@ -81,7 +81,7 @@ export interface RedisClientTransaction {
   get(key: string): RedisClientTransaction
   del(key: string): RedisClientTransaction
   set(key: string, value: string): RedisClientTransaction
-  exec(execAsPipeline?: boolean): Promise<RedisCommandRawReply[]>
+  exec(execAsPipeline?: boolean): Promise<unknown[]>
 }
 
 export type RedisCommandRawReply =
