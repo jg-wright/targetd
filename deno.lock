@@ -12,6 +12,7 @@
     "jsr:@std/internal@^1.0.9": "1.0.10",
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/testing@*": "1.0.15",
+    "jsr:@targetd/api@^10.0.3": "10.0.3",
     "npm:@commitlint/cli@^21.2.1": "21.2.1_@types+node@26.1.1_typescript@7.0.2",
     "npm:@commitlint/config-conventional@^21.2.0": "21.2.0",
     "npm:@commitlint/types@^21.2.0": "21.2.0",
@@ -29,7 +30,7 @@
     "npm:lint-staged@^17.3.0": "17.3.0",
     "npm:lodash@*": "4.17.23",
     "npm:qs@^6.15.3": "6.15.3",
-    "npm:redis@^4.7.0": "4.7.1",
+    "npm:redis@^4.7.1": "4.7.1",
     "npm:release-please@*": "17.3.0",
     "npm:supertest@*": "7.2.2",
     "npm:ts-toolbelt@^9.6.0": "9.6.0",
@@ -78,6 +79,14 @@
         "jsr:@std/fs@^1.0.19",
         "jsr:@std/internal@^1.0.10",
         "jsr:@std/path"
+      ]
+    },
+    "@targetd/api@10.0.3": {
+      "integrity": "762a2f77ed03596e9658a72c323176d903d9b1297116941ae3141eaea509592e",
+      "dependencies": [
+        "npm:fast-deep-equal",
+        "npm:ts-toolbelt",
+        "npm:zod"
       ]
     }
   },
@@ -2192,8 +2201,8 @@
       "packages/redis": {
         "dependencies": [
           "jsr:@es-toolkit/es-toolkit@^1.50.0",
-          "jsr:@targetd/api@^10.0.2",
-          "npm:redis@^4.7.0",
+          "jsr:@targetd/api@^10.0.3",
+          "npm:redis@^4.7.1",
           "npm:zod@~4.4.3"
         ]
       },
