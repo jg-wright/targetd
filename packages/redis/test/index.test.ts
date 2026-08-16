@@ -69,20 +69,18 @@ Deno.test('watch reloads on change', async () => {
 
   const data = await createData()
   let current = data
-  let sawInitial = false
 
-  const asyncDispoableStack = new AsyncDisposableStack()
+  await using asyncDispoableStack = new AsyncDisposableStack()
   asyncDispoableStack.adopt(
     await watch(
       data,
       redis.client,
       { keyPrefix: redis.keyPrefix, debounceMS: 50 },
-      (error, next) => {
+      withCounter((counter, error, next) => {
         if (error) throw error
         current = next
-        if (sawInitial) resolveReload?.()
-        sawInitial = true
-      },
+        if (counter > 0) resolveReload?.()
+      }),
     ),
     (stop) => stop(),
   )
@@ -93,17 +91,17 @@ Deno.test('watch reloads on change', async () => {
     greeting: { rules: [{ payload: 'Hey!' }] },
   }, { keyPrefix: redis.keyPrefix })
 
-  await using timeout = useTimeout(
+  await using race = useRace(
     reloaded,
     5000,
     'watch did not reload in time',
   )
-  await timeout.promise
+  await race.promise
 
   assertEquals(await current.getPayload('greeting'), 'Hey!')
 })
 
-function useTimeout<T>(
+function useRace<T>(
   promise: Promise<T>,
   ms: number,
   message: string,
@@ -123,7 +121,6 @@ async function useRedis(): Promise<
 > {
   const keyPrefix = `targetd-test:${crypto.randomUUID()}:`
   const client = createClient({ url: REDIS_URL }) as RedisClientType
-  client.on('error', () => {})
   await client.connect()
   return {
     client,
@@ -134,4 +131,12 @@ async function useRedis(): Promise<
       await client.quit()
     },
   }
+}
+
+function withCounter<Return, Args extends unknown[]>(
+  fn: (counter: number, ...args: Args) => Return,
+  start = 0,
+): (...args: Args) => Return {
+  let counter = start
+  return (...args) => fn(counter++, ...args)
 }
