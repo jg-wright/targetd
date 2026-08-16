@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.1.0](https://github.com/jg-wright/targetd/compare/@targetd/api-v10.0.3...@targetd/api-v10.1.0) (2026-08-16)
+
+
+### Features
+
+* **api:** add creatabledata interface ([9ed9b72](https://github.com/jg-wright/targetd/commit/9ed9b7283c2212d370f8c84b80e7e3be9877d0d8))
+
 ## [10.0.3](https://github.com/jg-wright/targetd/compare/@targetd/api-v10.0.2...@targetd/api-v10.0.3) (2026-07-15)
 
 

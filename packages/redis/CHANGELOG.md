@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/jg-wright/targetd/compare/@targetd/redis-v1.0.0...@targetd/redis-v1.0.1) (2026-08-16)
+
+
+### Performance Improvements
+
+* **redis:** use transactions ([d2603b7](https://github.com/jg-wright/targetd/commit/d2603b72119469742729d2c408e596c43b51a440))
+
 ## 1.0.0 (2026-08-09)
 
 
