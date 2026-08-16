@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@es-toolkit/es-toolkit@^1.49.0": "1.49.0",
+    "jsr:@es-toolkit/es-toolkit@^1.50.0": "1.50.0",
     "jsr:@std/assert@*": "1.0.14",
     "jsr:@std/assert@^1.0.13": "1.0.14",
     "jsr:@std/async@^1.0.13": "1.0.14",
@@ -26,7 +26,7 @@
     "npm:express@^5.2.1": "5.2.1",
     "npm:fast-deep-equal@^3.1.3": "3.1.3",
     "npm:flat@^6.0.1": "6.0.1",
-    "npm:lint-staged@^17.1.0": "17.1.0",
+    "npm:lint-staged@^17.3.0": "17.3.0",
     "npm:lodash@*": "4.17.23",
     "npm:qs@^6.15.3": "6.15.3",
     "npm:redis@^4.7.0": "4.7.1",
@@ -34,12 +34,12 @@
     "npm:supertest@*": "7.2.2",
     "npm:ts-toolbelt@^9.6.0": "9.6.0",
     "npm:yaml@^2.9.0": "2.9.0",
-    "npm:yargs@18": "18.0.0",
+    "npm:yargs@^18.1.0": "18.1.0",
     "npm:zod@~4.4.3": "4.4.3"
   },
   "jsr": {
-    "@es-toolkit/es-toolkit@1.49.0": {
-      "integrity": "65c5efb21703a5c7c4367d4428e2495d209804278ae32dd04d7a663a3104a40b"
+    "@es-toolkit/es-toolkit@1.50.0": {
+      "integrity": "dc4681775f0c743fdcdf7cee65dfb615d22d8cad0fda7a00e256b579c0e0cccc"
     },
     "@std/assert@1.0.14": {
       "integrity": "68d0d4a43b365abc927f45a9b85c639ea18a9fab96ad92281e493e4ed84abaa4",
@@ -103,7 +103,7 @@
         "@commitlint/read",
         "@commitlint/types",
         "tinyexec",
-        "yargs@18.0.0"
+        "yargs@18.1.0"
       ],
       "bin": true
     },
@@ -1395,8 +1395,8 @@
     "lines-and-columns@1.2.4": {
       "integrity": "sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg=="
     },
-    "lint-staged@17.1.0": {
-      "integrity": "sha512-d7UQRu/9ZPgfu4+hu/k0wny5GEaIxo+2jb2LJqQDkE7cHRTm1HGqNUDq5UOwsGPpjpaNAFmgAsYo3TR+i9cSJw==",
+    "lint-staged@17.3.0": {
+      "integrity": "sha512-woZS3vNe3UKqBaLPvbLOtKRY4tLANpWQhom12MGWqC8Mh1lCOO+WgSwmX2amjJAqTY9BkXYW87fCUH5H9Ph6xw==",
       "dependencies": [
         "picomatch",
         "string-argv",
@@ -1886,6 +1886,13 @@
         "strip-ansi@7.2.0"
       ]
     },
+    "string-width@8.2.2": {
+      "integrity": "sha512-GaPUh5gfdrYzqeVNZvUfT23vYYxXzKYidUcnMtJg/3rxRV63EFZy3k6xfKlmfeJD0176lnUV/Usr3XcwSvFzpg==",
+      "dependencies": [
+        "get-east-asian-width",
+        "strip-ansi@7.2.0"
+      ]
+    },
     "strip-ansi@6.0.1": {
       "integrity": "sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==",
       "dependencies": [
@@ -2112,13 +2119,13 @@
         "yargs-parser@21.1.1"
       ]
     },
-    "yargs@18.0.0": {
-      "integrity": "sha512-4UEqdc2RYGHZc7Doyqkrqiln3p9X2DZVxaGbwhn2pi7MrRagKaOcIKe8L3OxYcbhXLgLFUS3zAYuQjKBQgmuNg==",
+    "yargs@18.1.0": {
+      "integrity": "sha512-2rAgRKu54VsHkqI0/tYkmluGXHD4KW7yZoycuqDQ15QOTnc2VVfy0nN/1eMhnQLO00A+dwtK20xuCnc1YGeUyg==",
       "dependencies": [
         "cliui@9.0.1",
         "escalade",
         "get-caller-file",
-        "string-width@7.2.0",
+        "string-width@8.2.2",
         "y18n",
         "yargs-parser@22.0.0"
       ]
@@ -2132,7 +2139,7 @@
       "npm:@commitlint/cli@^21.2.1",
       "npm:@commitlint/config-conventional@^21.2.0",
       "npm:@commitlint/types@^21.2.0",
-      "npm:lint-staged@^17.1.0"
+      "npm:lint-staged@^17.3.0"
     ],
     "members": {
       "packages/api": {
@@ -2165,7 +2172,7 @@
       },
       "packages/fs": {
         "dependencies": [
-          "jsr:@es-toolkit/es-toolkit@^1.49.0",
+          "jsr:@es-toolkit/es-toolkit@^1.50.0",
           "jsr:@targetd/api@^10.0.3",
           "npm:@johngw/fs@^3.0.1",
           "npm:ts-toolbelt@^9.6.0",
@@ -2175,16 +2182,16 @@
       },
       "packages/json-schema": {
         "dependencies": [
-          "jsr:@es-toolkit/es-toolkit@^1.49.0",
+          "jsr:@es-toolkit/es-toolkit@^1.50.0",
           "jsr:@targetd/api@^10.0.3",
           "npm:@types/yargs@^17.0.35",
-          "npm:yargs@18",
+          "npm:yargs@^18.1.0",
           "npm:zod@~4.4.3"
         ]
       },
       "packages/redis": {
         "dependencies": [
-          "jsr:@es-toolkit/es-toolkit@^1.49.0",
+          "jsr:@es-toolkit/es-toolkit@^1.50.0",
           "jsr:@targetd/api@^10.0.2",
           "npm:redis@^4.7.0",
           "npm:zod@~4.4.3"

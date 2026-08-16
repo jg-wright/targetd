@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "exports": "./src/index.ts",
   "imports": {
-    "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.49.0",
+    "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.50.0",
     "@targetd/api": "jsr:@targetd/api@^10.0.2",
     "redis": "npm:redis@^4.7.0",
     "zod": "npm:zod@~4.4.3"
