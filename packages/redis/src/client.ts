@@ -11,7 +11,7 @@ export interface RedisClient {
   /**
    * Get the string value of a key, or `null` when the key does not exist.
    */
-  get(key: string): Promise<string | null>
+  get(key: string): Promise<RedisCommandRawReply>
 
   /**
    * Set the string value of a key.
@@ -49,6 +49,8 @@ export interface RedisClient {
    */
   connect(): Promise<unknown>
 
+  multi(): RedisClientTransaction
+
   /**
    * Gracefully close the connection.
    */
@@ -74,6 +76,21 @@ export interface RedisClient {
    */
   on?(event: string, listener: (...args: any[]) => void): unknown
 }
+
+export interface RedisClientTransaction {
+  get(key: string): RedisClientTransaction
+  del(key: string): RedisClientTransaction
+  set(key: string, value: string): RedisClientTransaction
+  exec(execAsPipeline?: boolean): Promise<RedisCommandRawReply[]>
+}
+
+export type RedisCommandRawReply =
+  | string
+  | number
+  | Buffer
+  | null
+  | undefined
+  | Array<RedisCommandRawReply>
 
 /**
  * Default prefix applied to every key holding a payload's rules.

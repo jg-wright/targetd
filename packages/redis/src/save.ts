@@ -52,12 +52,13 @@ export async function save(
   options: SaveOptions = {},
 ): Promise<void> {
   const keyPrefix = options.keyPrefix ?? DEFAULT_KEY_PREFIX
+  const transaction = redis.multi()
 
-  await Promise.all(
-    Object.entries(rules).map(([name, value]) =>
-      redis.set(`${keyPrefix}${name}`, JSON.stringify(value))
-    ),
-  )
+  for (const [name, value] of Object.entries(rules)) {
+    transaction.set(`${keyPrefix}${name}`, JSON.stringify(value))
+  }
+
+  await transaction.exec()
 }
 
 /**

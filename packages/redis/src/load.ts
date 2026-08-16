@@ -1,5 +1,5 @@
 import { DEFAULT_KEY_PREFIX, type RedisClient } from './client.ts'
-import type { Data, DataSchema } from '@targetd/api'
+import { type CreatableData, Data, type DataSchema } from '@targetd/api'
 
 /**
  * Options for {@link load}.
@@ -45,7 +45,7 @@ export interface LoadOptions {
  * ```
  */
 export async function load<$ extends DataSchema>(
-  data: Data<$>,
+  dataOrSchema: $ | Data<$>,
   redis: RedisClient,
   options: LoadOptions = {},
 ): Promise<Data<$>> {
@@ -53,17 +53,29 @@ export async function load<$ extends DataSchema>(
 
   // Rules are first-match-wins. Different payload names are independent, but a
   // stable order keeps behaviour deterministic regardless of keyspace layout.
-  const keys = (await redis.keys(`${keyPrefix}*`))
-    .filter((key) => key.startsWith(keyPrefix))
-    .sort((a, b) => a.localeCompare(b))
+  const [kvs, data] = await Promise.all([
+    redis.keys(`${keyPrefix}*`).then((keys) =>
+      Promise.all(
+        keys.filter((key) => key.startsWith(keyPrefix))
+          .sort((a, b) => a.localeCompare(b))
+          .map((key) => ({ key, promise: redis.get(key) })),
+      )
+    ),
+    dataOrSchema instanceof Data ? dataOrSchema : Data.create(dataOrSchema),
+  ])
 
   let result = data
 
-  for (const key of keys) {
-    const raw = await redis.get(key)
+  for (const { key, promise } of kvs) {
+    const value = await promise
     // A key can disappear between KEYS and GET (expiry, deletion). Skip it.
-    if (raw === null) continue
-    result = await addStoredRules(result, key.slice(keyPrefix.length), raw, key)
+    if (value === null) continue
+    result = await addStoredRules(
+      result,
+      key.slice(keyPrefix.length),
+      String(value),
+      key,
+    )
   }
 
   return result
@@ -72,12 +84,12 @@ export async function load<$ extends DataSchema>(
 /**
  * Parse a stored JSON value and add it to the Data instance under `name`.
  */
-function addStoredRules<$ extends DataSchema>(
-  data: Data<$>,
+function addStoredRules<$ extends DataSchema, D extends CreatableData<$>>(
+  data: D,
   name: string,
   raw: string,
   key: string,
-): Promise<Data<$>> {
+): Promise<D> {
   let value: any
   try {
     value = JSON.parse(raw)
@@ -99,5 +111,5 @@ function addStoredRules<$ extends DataSchema>(
     )
   }
 
-  return data.addRules(name, value)
+  return data.addRules(name, value) as Promise<D>
 }
