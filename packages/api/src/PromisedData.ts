@@ -8,6 +8,7 @@ import type { MaybePromise } from './types.ts'
 import type { DataItemIn } from './parsers/DataItem.ts'
 import type { InsertableData } from './InsertableData.ts'
 import type { QueryableData } from './QueryableData.ts'
+import type { CreatableData } from './CreatableData.ts'
 
 /**
  * A Promise-based wrapper for Data that implements the InsertableData and
@@ -23,7 +24,7 @@ import type { QueryableData } from './QueryableData.ts'
  * @implements {QueryableData<$>}
  */
 export class PromisedData<$ extends DataSchema> extends Promise<Data<$>>
-  implements InsertableData<$>, QueryableData<$> {
+  implements CreatableData<$>, InsertableData<$>, QueryableData<$> {
   /**
    * Creates a new PromisedData instance.
    *

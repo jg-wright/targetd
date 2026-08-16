@@ -122,6 +122,6 @@ export function arrayLast<T extends unknown[]>(array: T): L.Last<T> {
   return array[array.length - 1]
 }
 
-type Entries<T extends Record<string | symbol, unknown>> = {
+export type Entries<T extends Record<PropertyKey, unknown>> = {
   [K in keyof T]: [K, T[K]]
 }[keyof T]

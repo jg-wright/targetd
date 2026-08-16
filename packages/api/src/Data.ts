@@ -32,6 +32,7 @@ import { resolveVariables } from './parsers/DataItemVariableResolver.ts'
 import type { InsertableData } from './InsertableData.ts'
 import type { QueryableData } from './QueryableData.ts'
 import type { DataSchema } from './DataSchema.ts'
+import type { CreatableData } from './CreatableData.ts'
 
 /**
  * In-memory data store. Configure payload and targeting schemas with
@@ -64,7 +65,7 @@ import type { DataSchema } from './DataSchema.ts'
  * ```
  */
 export default class Data<$ extends DataSchema = DataSchema>
-  implements InsertableData<$>, QueryableData<$> {
+  implements CreatableData<$>, InsertableData<$>, QueryableData<$> {
   readonly #schema: $
   readonly #dataOut: DataItemsOut<$>
   // The pre-parse inputs behind #dataOut. Parsing transforms rules
