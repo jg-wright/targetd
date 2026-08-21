@@ -34,6 +34,7 @@
     "check": "deno check --frozen packages/**/src",
     "commitlint": "deno run --permission-set=commitlint --allow-write=$TMPDIR @commitlint/cli",
     "hook": "deno run --permission-set=hook https://deno.land/x/deno_hooks@0.1.1/mod.ts",
+    "link:node": "deno install --node-modules-dir=auto && deno run --allow-read --allow-write scripts/link-jsr-node-modules.ts",
     "test": "deno test --frozen --permission-set=test packages/**/test",
     "test:dev": "deno test --permission-set=test packages/**/test"
   },
