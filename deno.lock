@@ -14,7 +14,6 @@
     "jsr:@std/path@1": "1.1.2",
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/testing@*": "1.0.15",
-    "jsr:@targetd/api@^10.0.3": "10.0.3",
     "npm:@commitlint/cli@^21.2.2": "21.2.2_@types+node@26.2.0_typescript@7.0.2",
     "npm:@commitlint/config-conventional@^21.2.2": "21.2.2",
     "npm:@commitlint/types@^21.2.0": "21.2.0",
@@ -81,14 +80,6 @@
         "jsr:@std/fs@^1.0.19",
         "jsr:@std/internal@^1.0.10",
         "jsr:@std/path@^1.1.1"
-      ]
-    },
-    "@targetd/api@10.0.3": {
-      "integrity": "762a2f77ed03596e9658a72c323176d903d9b1297116941ae3141eaea509592e",
-      "dependencies": [
-        "npm:fast-deep-equal",
-        "npm:ts-toolbelt",
-        "npm:zod"
       ]
     }
   },
@@ -2150,20 +2141,20 @@
       },
       "packages/client": {
         "dependencies": [
-          "jsr:@targetd/api@^10.0.3",
+          "jsr:@targetd/api@^10.1.0",
           "npm:ts-toolbelt@^9.6.0",
           "npm:zod@~4.4.3"
         ]
       },
       "packages/date-range": {
         "dependencies": [
-          "jsr:@targetd/api@^10.0.3",
+          "jsr:@targetd/api@^10.1.0",
           "npm:zod@~4.4.3"
         ]
       },
       "packages/explode": {
         "dependencies": [
-          "jsr:@targetd/api@^10.0.3",
+          "jsr:@targetd/api@^10.1.0",
           "npm:flat@^6.0.1",
           "npm:ts-toolbelt@^9.6.0",
           "npm:zod@~4.4.3"
@@ -2172,7 +2163,7 @@
       "packages/fs": {
         "dependencies": [
           "jsr:@es-toolkit/es-toolkit@^1.51.0",
-          "jsr:@targetd/api@^10.0.3",
+          "jsr:@targetd/api@^10.1.0",
           "npm:@johngw/fs@^3.0.1",
           "npm:ts-toolbelt@^9.6.0",
           "npm:yaml@^2.9.0",
@@ -2182,7 +2173,7 @@
       "packages/json-schema": {
         "dependencies": [
           "jsr:@es-toolkit/es-toolkit@^1.51.0",
-          "jsr:@targetd/api@^10.0.3",
+          "jsr:@targetd/api@^10.1.0",
           "npm:@types/yargs@^17.0.35",
           "npm:yargs@^18.1.0",
           "npm:zod@~4.4.3"
@@ -2191,14 +2182,14 @@
       "packages/redis": {
         "dependencies": [
           "jsr:@es-toolkit/es-toolkit@^1.51.0",
-          "jsr:@targetd/api@^10.0.3",
+          "jsr:@targetd/api@^10.1.0",
           "npm:redis@^6.2.1",
           "npm:zod@~4.4.3"
         ]
       },
       "packages/server": {
         "dependencies": [
-          "jsr:@targetd/api@^10.0.3",
+          "jsr:@targetd/api@^10.1.0",
           "npm:@johngw/error@^2.2.2",
           "npm:@types/express@^5.0.6",
           "npm:@types/qs@^6.15.1",
