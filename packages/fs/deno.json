@@ -9,7 +9,7 @@
     "@targetd/api": "jsr:@targetd/api@^10.1.0",
     "ts-toolbelt": "npm:ts-toolbelt@^9.6.0",
     "yaml": "npm:yaml@^2.9.0",
-    "zod": "npm:zod@~4.4.3"
+    "zod": "npm:zod@~4.5.2"
   },
   "lint": {
     "rules": {
