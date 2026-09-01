@@ -7,7 +7,7 @@
     "@es-toolkit/es-toolkit": "jsr:@es-toolkit/es-toolkit@^1.52.0",
     "@targetd/api": "jsr:@targetd/api@^10.1.0",
     "redis": "npm:redis@^6.2.1",
-    "zod": "npm:zod@~4.4.3"
+    "zod": "npm:zod@~4.5.2"
   },
   "lint": {
     "rules": {
