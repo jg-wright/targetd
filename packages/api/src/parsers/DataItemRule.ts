@@ -91,7 +91,6 @@ import type { DataSchema } from '../DataSchema.ts'
 export function DataItemRuleParser<
   $ extends DataSchema,
   PayloadParser extends $ZodType,
-  VariableRegistry extends Record<string, any>,
   AllowMultipleTargeting extends boolean = true,
 >(
   variablesRegistry: VariablesRegistry,
@@ -336,7 +335,6 @@ export interface RuleWithFallThrough<
 export function RuleWithFallThroughParser<
   $ extends DataSchema,
   PayloadParser extends $ZodType,
-  Variables extends Record<string, any>,
   AllowMultipleTargeting extends boolean = true,
 >(
   variablesRegistry: VariablesRegistry,

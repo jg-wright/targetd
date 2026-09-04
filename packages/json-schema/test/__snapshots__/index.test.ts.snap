@@ -366,7 +366,15 @@ snapshot[`json schema for simple data object 1`] = `
                           },
                           {
                             items: {
-                              type: "string",
+                              anyOf: [
+                                {
+                                  pattern: "^\\\\{\\\\{[\\\\s\\\\S]{0,}\\\\}\\\\}\$",
+                                  type: "string",
+                                },
+                                {
+                                  type: "string",
+                                },
+                              ],
                             },
                             type: "array",
                           },
@@ -425,7 +433,15 @@ snapshot[`json schema for simple data object 1`] = `
             additionalProperties: false,
             properties: {
               payload: {
-                type: "string",
+                anyOf: [
+                  {
+                    pattern: "^\\\\{\\\\{[\\\\s\\\\S]{0,}\\\\}\\\\}\$",
+                    type: "string",
+                  },
+                  {
+                    type: "string",
+                  },
+                ],
               },
               targeting: {
                 anyOf: [

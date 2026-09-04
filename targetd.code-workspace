@@ -15,7 +15,7 @@
     "deno.enable": true,
     "deno.lint": true,
     "eslint.enable": false,
-    "editor.defaultFormatter": "denoland.vscode-deno",
+    "editor.defaultFormatter": "oxc.oxc-vscode",
     "[typescript]": {
       "editor.defaultFormatter": "denoland.vscode-deno"
     },

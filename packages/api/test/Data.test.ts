@@ -904,6 +904,24 @@ Deno.test('variables in wrapped positions validate against the wrapper', async (
   assertEquals(await data.getPayload('foo'), { a: null })
 })
 
+Deno.test('variables resolve in refined string positions', async () => {
+  const data = await Data.create(
+    DataSchema.create()
+      .usePayload({ foo: z.strictObject({ url: z.url() }) }),
+  )
+    .addRules('foo', {
+      variables: { u: [{ payload: 'https://example.com/search' }] },
+      // A refined string (`url()`) must still accept a `{{var}}` placeholder —
+      // the placeholder is not itself a valid URL, so the field parser must
+      // not run before the variable is recognised.
+      rules: [{ payload: { url: '{{u}}' } }],
+    })
+
+  assertEquals(await data.getPayload('foo'), {
+    url: 'https://example.com/search',
+  })
+})
+
 Deno.test('variables inside union options resolve', async () => {
   const data = await Data.create(
     DataSchema.create()

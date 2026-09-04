@@ -107,7 +107,7 @@ export function resolveVariables(
 }
 
 export function isVariableString(input: string): input is VariableString {
-  return /^\{\{[^\}]+\}\}$/.test(input)
+  return /^\{\{[^}]+\}\}$/.test(input)
 }
 
 type VariableString = `{{${string}}}`

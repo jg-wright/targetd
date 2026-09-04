@@ -1,17 +1,7 @@
-import {
-  type output,
-  pipe,
-  safeExtend,
-  transform,
-  type ZodMiniAny,
-  ZodMiniObject,
-  type ZodMiniPipe,
-  type ZodMiniTransform,
-} from 'zod/mini'
+import { safeExtend, type ZodMiniAny, ZodMiniObject } from 'zod/mini'
 import { objectEntries } from '../util.ts'
 import {
   DataItemVariableResolverParser,
-  DataItemVariableResolverTransformer,
   type ParserPosition,
   type VariableStringParser,
   variableStringParser,
@@ -115,26 +105,18 @@ function variableResolverParser<
   parser: Parser,
   position?: ParserPosition,
 ): WithVariableResolver<Parser> {
-  return (parser._zod.def.type === 'string'
-    ? pipe(
-      parser,
-      transform((input, ctx) =>
-        DataItemVariableResolverTransformer(
-          variablesRegistry,
-          parser,
-          input as string,
-          ctx,
-          position,
-        )
-      ),
-    )
-    : zodSwitch([
-      [
-        variableStringParser(),
-        DataItemVariableResolverParser(variablesRegistry, parser, position),
-      ],
-      [any(), parser],
-    ])) as WithVariableResolver<Parser>
+  // A `{{var}}` placeholder must be recognised *before* the field's own
+  // parser runs, otherwise a refined string (e.g. `z.string().url()`)
+  // rejects the placeholder as an invalid value before it can resolve.
+  // `zodSwitch` matches the placeholder first, so every leaf type —
+  // strings included — accepts a whole-value variable reference.
+  return zodSwitch([
+    [
+      variableStringParser(),
+      DataItemVariableResolverParser(variablesRegistry, parser, position),
+    ],
+    [any(), parser],
+  ]) as WithVariableResolver<Parser>
 }
 
 function arrayVariableResolverParser<Parser extends $ZodArray>(
@@ -308,12 +290,10 @@ function objectVariableResolverParser<
 
 type WithVariableResolver<
   Parser extends $ZodType,
-> = Parser['_zod']['def']['type'] extends 'string'
-  ? ZodMiniPipe<Parser, ZodMiniTransform<unknown, output<Parser>>>
-  : ZodSwitch<[
-    [VariableStringParser, DataItemVariableResolverParser],
-    [ZodMiniAny, Parser],
-  ]>
+> = ZodSwitch<[
+  [VariableStringParser, DataItemVariableResolverParser],
+  [ZodMiniAny, Parser],
+]>
 
 export type RecursiveVariableResolver<
   Parser extends $ZodType,
