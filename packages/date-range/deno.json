@@ -4,8 +4,8 @@
   "version": "8.0.2",
   "exports": "./src/index.ts",
   "imports": {
-    "@targetd/api": "jsr:@targetd/api@^10.0.3",
-    "zod": "npm:zod@~4.4.3"
+    "@targetd/api": "jsr:@targetd/api@^10.1.0",
+    "zod": "npm:zod@~4.5.2"
   },
   "lint": {
     "rules": {
