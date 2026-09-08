@@ -31,7 +31,7 @@
     "npm:lint-staged@^17.4.1": "17.4.1",
     "npm:lodash@*": "4.17.23",
     "npm:oxlint@latest": "1.79.0",
-    "npm:qs@^6.15.3": "6.15.3",
+    "npm:qs@^6.16.0": "6.16.0",
     "npm:redis@^6.2.1": "6.2.1",
     "npm:release-please@*": "17.3.0",
     "npm:supertest@*": "7.2.2",
@@ -1744,8 +1744,8 @@
         "ipaddr.js"
       ]
     },
-    "qs@6.15.3": {
-      "integrity": "sha512-O9gl3zCl5h5blw1KGUzQKhA5oUXSl8rwUIM5o0S3nCXMliSvy5Dzx7/DJcI+SwgICv+IneSZwhBh1oSyEHA71A==",
+    "qs@6.16.0": {
+      "integrity": "sha512-h6fhOIaRrID2CbEY2fqs+7t+UXZo+MLAnU5gRIq85uFtdiUPCdsApMlHhXogKVM4HM2DVbIjGNTTYH2OcmP1vA==",
       "dependencies": [
         "es-define-property",
         "side-channel"
@@ -2317,7 +2317,7 @@
           "npm:cors@^2.8.6",
           "npm:express-query-boolean@2",
           "npm:express@^5.2.1",
-          "npm:qs@^6.15.3",
+          "npm:qs@^6.16.0",
           "npm:zod@~4.5.2"
         ]
       }
