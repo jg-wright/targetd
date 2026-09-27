@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.0.3](https://github.com/jg-wright/targetd/compare/@targetd/json-schema-v7.0.2...@targetd/json-schema-v7.0.3) (2026-09-04)
+
+
+### Bug Fixes
+
+* placeholder validation after hydration ([0f10339](https://github.com/jg-wright/targetd/commit/0f103399d8a93f6d28848bd1c9d78f099346211c))
+
 ## [7.0.2](https://github.com/jg-wright/targetd/compare/@targetd/json-schema-v7.0.1...@targetd/json-schema-v7.0.2) (2026-07-15)
 
 

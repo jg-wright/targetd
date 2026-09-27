@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.1.1](https://github.com/jg-wright/targetd/compare/@targetd/api-v10.1.0...@targetd/api-v10.1.1) (2026-09-04)
+
+
+### Bug Fixes
+
+* placeholder validation after hydration ([0f10339](https://github.com/jg-wright/targetd/commit/0f103399d8a93f6d28848bd1c9d78f099346211c))
+
 ## [10.1.0](https://github.com/jg-wright/targetd/compare/@targetd/api-v10.0.3...@targetd/api-v10.1.0) (2026-08-16)
 
 
