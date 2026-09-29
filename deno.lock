@@ -37,7 +37,7 @@
     "npm:supertest@*": "7.2.2",
     "npm:ts-toolbelt@^9.6.0": "9.6.0",
     "npm:yaml@^2.9.1": "2.9.1",
-    "npm:yargs@^18.1.0": "18.1.0",
+    "npm:yargs@^18.2.0": "18.2.0",
     "npm:zod@~4.6.5": "4.6.5"
   },
   "jsr": {
@@ -106,7 +106,7 @@
         "@commitlint/read",
         "@commitlint/types",
         "tinyexec",
-        "yargs@18.1.0"
+        "yargs@18.2.0"
       ],
       "bin": true
     },
@@ -2230,8 +2230,8 @@
         "yargs-parser@21.1.1"
       ]
     },
-    "yargs@18.1.0": {
-      "integrity": "sha512-2rAgRKu54VsHkqI0/tYkmluGXHD4KW7yZoycuqDQ15QOTnc2VVfy0nN/1eMhnQLO00A+dwtK20xuCnc1YGeUyg==",
+    "yargs@18.2.0": {
+      "integrity": "sha512-9OpKOLeaoNFecEp7P6iYbzze/5CqWoH7N3SMs/6y1XF4nMvFMspEGZzJ6uFi9MmQwXhyzqYoSEKO3tvA3Z/o2w==",
       "dependencies": [
         "cliui@9.0.1",
         "escalade",
@@ -2296,7 +2296,7 @@
           "jsr:@es-toolkit/es-toolkit@^1.52.0",
           "jsr:@targetd/api@^10.1.0",
           "npm:@types/yargs@^17.0.35",
-          "npm:yargs@^18.1.0",
+          "npm:yargs@^18.2.0",
           "npm:zod@~4.6.5"
         ]
       },
