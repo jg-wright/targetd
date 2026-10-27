@@ -15,7 +15,7 @@
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/testing@*": "1.0.15",
     "npm:@commitlint/cli@^21.2.4": "21.2.4",
-    "npm:@commitlint/config-conventional@^21.2.3": "21.2.4",
+    "npm:@commitlint/config-conventional@^21.2.4": "21.2.4",
     "npm:@commitlint/types@^21.2.3": "21.2.3",
     "npm:@johngw/error@^2.2.2": "2.2.2",
     "npm:@johngw/fs@^3.0.1": "3.0.1",
@@ -2109,7 +2109,7 @@
   "workspace": {
     "dependencies": [
       "npm:@commitlint/cli@^21.2.4",
-      "npm:@commitlint/config-conventional@^21.2.3",
+      "npm:@commitlint/config-conventional@^21.2.4",
       "npm:@commitlint/types@^21.2.3",
       "npm:lint-staged@^17.6.0"
     ],
